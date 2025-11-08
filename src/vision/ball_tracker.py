@@ -31,12 +31,18 @@ class BallTracker:
         print(f"Loading ball detection model: {model_path}")
         self.model = YOLO(model_path)
         
+        # Print model classes for debugging
+        print(f"Model classes: {self.model.names}")
+        
         # Trajectory history (deque for efficient FIFO)
         self.trajectory: Deque[Tuple[int, int]] = deque(maxlen=max_trajectory)
         self.max_trajectory = max_trajectory
         
         # Minimum confidence threshold
-        self.min_confidence = 0.3  # Lower for small fast-moving ball
+        self.min_confidence = 0.05  # Very low threshold for difficult ball detection
+        
+        # Target class name to detect (COCO class for sports balls)
+        self.target_class = "sports ball"  # Default COCO class for all sports balls
         
         # Ball color for visualization (orange: #fa8b32)
         self.ball_color = (50, 139, 250)  # BGR format
@@ -68,13 +74,23 @@ class BallTracker:
         
         result = results[0]
         
-        # Get the detection with highest confidence
+        # Get the detection with highest confidence that matches "ball" class
         best_detection = None
         best_conf = 0
         
         for box in result.boxes:
             conf = float(box.conf[0])
-            if conf > best_conf:
+            
+            # Check if this detection is for "ball" class
+            class_id = int(box.cls[0])
+            class_name = self.model.names[class_id]
+            
+            # Debug: print all detections occasionally (every 100 frames)
+            if frame_number % 100 == 0:
+                print(f"\nFrame {frame_number}: Detected '{class_name}' with confidence {conf:.3f}")
+            
+            # Only consider detections of class "Ball" (exact match)
+            if class_name == self.target_class and conf > best_conf:
                 best_conf = conf
                 best_detection = box
         

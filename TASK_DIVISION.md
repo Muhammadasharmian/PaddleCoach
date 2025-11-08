@@ -29,11 +29,11 @@ The project is divided into **4 independent subsystems** based on the Component 
   - `player_profile.py` - PlayerProfile class
   - `pose_data.py` - PoseData class
 - `src/vision/` - Vision tracking system
-  - `ball_tracker.py` - OpenCV color space detection and contour tracking (ball color: #fa8b32)
-  - `player_tracker.py` - Player movement tracking
+  - `ball_tracker.py` - YOLO-based ball detection and tracking (using bettertrainedYolov11.pt)
+  - `player_tracker.py` - Player movement tracking with YOLOv11 pose estimation
   - `tracking_interface.py` - ITrackingData interface
   - `video_processor.py` - MP4 video processing and frame analysis
-  - `color_detection.py` - HSV color space conversion and filtering utilities
+  - `shot_detector.py` - Shot/stroke detection based on pose analysis
 
 #### Dependencies:
 - OpenCV, NumPy
@@ -41,9 +41,10 @@ The project is divided into **4 independent subsystems** based on the Component 
 
 #### Deliverables:
 1. Complete data model classes with all attributes and methods
-2. OpenCV-based ball tracking system using color detection (orange ball #fa8b32)
+2. YOLO-based ball tracking system using bettertrainedYolov11.pt (detects "ball" class)
 3. MP4 video processing pipeline for real-time and recorded match analysis
 4. ITrackingData interface for other components to consume
+5. Shot detection system based on pose keypoint analysis
 
 ---
 
