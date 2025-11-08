@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaddleCoach - AI-Powered Ping Pong Analytics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                🏓 PaddleCoach
+            </div>
+            <ul class="nav-links">
+                <li><a href="/" class="active">Home</a></li>
+                <li><a href="/match">Live Match</a></li>
+                <li><a href="/stats">Player Stats</a></li>
+                <li><a href="/coaching">AI Coaching</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="container">
+        <div class="hero fade-in">
+            <h1>Welcome to PaddleCoach</h1>
+            <p>AI-Powered Ping Pong Analytics & Coaching Platform</p>
+            <p style="margin-top: 1rem; font-size: 1rem; opacity: 0.8;">
+                Real-time match tracking | Advanced analytics | Professional coaching insights
+            </p>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="card-grid">
+            <!-- Live Match Tracking -->
+            <div class="card fade-in">
+                <div class="card-icon">📊</div>
+                <h3>Live Match Tracking</h3>
+                <p>Track matches in real-time with AI-powered ball and player detection. Get instant score updates and detailed shot analysis.</p>
+                <a href="/match" class="btn btn-primary">Start Tracking</a>
+            </div>
+
+            <!-- Player Statistics -->
+            <div class="card fade-in" style="animation-delay: 0.1s;">
+                <div class="card-icon">📈</div>
+                <h3>Player Statistics</h3>
+                <p>Comprehensive analytics on player performance, shot accuracy, movement patterns, and historical trends.</p>
+                <a href="/stats" class="btn btn-primary">View Stats</a>
+            </div>
+
+            <!-- AI Coaching -->
+            <div class="card fade-in" style="animation-delay: 0.2s;">
+                <div class="card-icon">🤖</div>
+                <h3>AI Coaching</h3>
+                <p>Get personalized coaching insights powered by advanced AI. Compare your technique with professionals and receive real-time feedback.</p>
+                <a href="/coaching" class="btn btn-primary">Get Coached</a>
+            </div>
+        </div>
+
+        <!-- Features Showcase -->
+        <section style="margin-top: 4rem;">
+            <h2 style="text-align: center; margin-bottom: 2rem; font-size: 2rem;">Platform Features</h2>
+            
+            <div class="card-grid">
+                <div class="card">
+                    <h3>🎥 Computer Vision</h3>
+                    <p>Advanced tracking using YOLOv12N and Faster R-CNN for precise ball and player detection</p>
+                </div>
+
+                <div class="card">
+                    <h3>⚡ Real-time Updates</h3>
+                    <p>WebSocket-powered live score updates and match progression</p>
+                </div>
+
+                <div class="card">
+                    <h3>🎯 Shot Analysis</h3>
+                    <p>Detailed breakdown of every shot including type, speed, spin, and placement</p>
+                </div>
+
+                <div class="card">
+                    <h3>📊 Advanced Analytics</h3>
+                    <p>Comprehensive statistics with beautiful visualizations and interactive charts</p>
+                </div>
+
+                <div class="card">
+                    <h3>🏆 Pro Comparison</h3>
+                    <p>Compare your technique with professional players using pose estimation</p>
+                </div>
+
+                <div class="card">
+                    <h3>💬 Stats Bot</h3>
+                    <p>Ask questions about your performance in natural language</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Getting Started -->
+        <section style="margin-top: 4rem; margin-bottom: 4rem;">
+            <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h2 style="color: white; margin-bottom: 1rem;">Getting Started</h2>
+                <ol style="margin-left: 1.5rem; line-height: 2;">
+                    <li>Set up your camera to capture the ping pong table</li>
+                    <li>Start a new match from the Live Match page</li>
+                    <li>The AI will automatically track ball and player movements</li>
+                    <li>View real-time statistics and coaching insights</li>
+                    <li>Review match history and improve your game!</li>
+                </ol>
+                <div style="margin-top: 2rem;">
+                    <a href="/match" class="btn btn-outline" style="border-color: white; color: white;">
+                        Start Your First Match →
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 2rem 0; color: var(--text-secondary); border-top: 1px solid var(--border-color);">
+            <p>🏓 PaddleCoach - AI-Powered Ping Pong Analytics Platform</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                Built with ❤️ by Team PaddleCoach | © 2025
+            </p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.7;">
+                Frontend by Rakshit
+            </p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

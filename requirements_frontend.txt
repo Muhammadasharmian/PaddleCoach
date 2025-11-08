@@ -1,0 +1,28 @@
+# Frontend Requirements
+# Author: Rakshit
+# Description: Python dependencies for PaddleCoach frontend
+
+# Web Framework
+flask==3.0.0
+flask-socketio==5.3.5
+flask-cors==4.0.0
+
+# WebSocket Support
+python-socketio==5.10.0
+eventlet==0.33.3
+
+# HTTP Requests
+requests==2.31.0
+
+# Environment Variables
+python-dotenv==1.0.0
+
+# Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+unittest-xml-reporting==3.2.0
+
+# Note: Additional dependencies will be added by other team members
+# - Ashwani: OpenCV, PyTorch, YOLO (vision system)
+# - Ashar: MySQL, SQLAlchemy (database layer)
+# - Mohnish: MediaPipe, Gemini API, Veo (AI modules)

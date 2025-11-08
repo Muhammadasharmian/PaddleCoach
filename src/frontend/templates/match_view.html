@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Match - PaddleCoach</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">🏓 PaddleCoach</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/match" class="active">Live Match</a></li>
+                <li><a href="/stats">Player Stats</a></li>
+                <li><a href="/coaching">AI Coaching</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Scoreboard -->
+        <div class="scoreboard fade-in">
+            <h2 style="text-align: center; margin-bottom: 1rem;">Live Match</h2>
+            
+            <div class="score-display">
+                <div class="player-score">
+                    <div class="player-name" id="player1-name">Player 1</div>
+                    <div class="score" id="player1-score">0</div>
+                    <div style="margin-top: 1rem; opacity: 0.8;">
+                        <span>Sets: <span id="player1-sets">0</span></span>
+                    </div>
+                </div>
+
+                <div class="vs-divider">VS</div>
+
+                <div class="player-score">
+                    <div class="player-name" id="player2-name">Player 2</div>
+                    <div class="score" id="player2-score">0</div>
+                    <div style="margin-top: 1rem; opacity: 0.8;">
+                        <span>Sets: <span id="player2-sets">0</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="match-info">
+                <div>
+                    <strong>Current Set:</strong> <span id="current-set">1</span>
+                </div>
+                <div>
+                    <strong>Server:</strong> <span id="current-server">Player 1</span>
+                </div>
+                <div>
+                    <strong>Match Status:</strong> <span id="match-status" class="pulse">🟢 Live</span>
+                </div>
+                <div>
+                    <strong>Duration:</strong> <span id="match-duration">00:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Match Controls -->
+        <div class="card" style="text-align: center; margin-bottom: 2rem;">
+            <h3>Match Controls</h3>
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="btn btn-primary" id="start-match-btn">Start Match</button>
+                <button class="btn btn-secondary" id="pause-match-btn" disabled>Pause</button>
+                <button class="btn btn-outline" id="end-match-btn" disabled>End Match</button>
+            </div>
+        </div>
+
+        <!-- Recent Points -->
+        <div class="card">
+            <h3 style="margin-bottom: 1.5rem;">Recent Points</h3>
+            <div id="points-list">
+                <p style="text-align: center; color: var(--text-secondary);">No points recorded yet. Start the match to begin tracking.</p>
+            </div>
+        </div>
+
+        <!-- Live Stats Preview -->
+        <div style="margin-top: 2rem;">
+            <h2 style="margin-bottom: 1.5rem;">Live Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-shots">0</div>
+                    <div class="stat-label">Total Shots</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="rally-length">0</div>
+                    <div class="stat-label">Avg Rally Length</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="longest-rally">0</div>
+                    <div class="stat-label">Longest Rally</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="match-points">0</div>
+                    <div class="stat-label">Total Points</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connection Status -->
+        <div id="connection-status" class="card" style="margin-top: 2rem; background-color: #f0fdf4; border-left: 4px solid var(--secondary-color);">
+            <p style="margin: 0;"><strong>✓ Connected</strong> - Real-time updates enabled</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script>
+        // Initialize WebSocket connection
+        const socket = io();
+        let matchStartTime = null;
+        let timerInterval = null;
+
+        // Connection handlers
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            document.getElementById('connection-status').innerHTML = 
+                '<p style="margin: 0;"><strong>✓ Connected</strong> - Real-time updates enabled</p>';
+            document.getElementById('connection-status').style.backgroundColor = '#f0fdf4';
+            document.getElementById('connection-status').style.borderLeftColor = 'var(--secondary-color)';
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+            document.getElementById('connection-status').innerHTML = 
+                '<p style="margin: 0;"><strong>✗ Disconnected</strong> - Attempting to reconnect...</p>';
+            document.getElementById('connection-status').style.backgroundColor = '#fef2f2';
+            document.getElementById('connection-status').style.borderLeftColor = 'var(--danger-color)';
+        });
+
+        // Score update handler
+        socket.on('score_update', (data) => {
+            updateScoreboard(data.score_data);
+        });
+
+        // Point complete handler
+        socket.on('point_complete', (data) => {
+            addPointToList(data.point_data);
+            updateLiveStats(data.point_data);
+        });
+
+        // Match controls
+        document.getElementById('start-match-btn').addEventListener('click', () => {
+            startMatch();
+        });
+
+        document.getElementById('pause-match-btn').addEventListener('click', () => {
+            pauseMatch();
+        });
+
+        document.getElementById('end-match-btn').addEventListener('click', () => {
+            endMatch();
+        });
+
+        function startMatch() {
+            matchStartTime = new Date();
+            document.getElementById('start-match-btn').disabled = true;
+            document.getElementById('pause-match-btn').disabled = false;
+            document.getElementById('end-match-btn').disabled = false;
+            document.getElementById('match-status').innerHTML = '🟢 Live';
+            
+            // Start timer
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            // Subscribe to match updates
+            socket.emit('subscribe_match', { match_id: 1 });
+        }
+
+        function pauseMatch() {
+            clearInterval(timerInterval);
+            document.getElementById('match-status').innerHTML = '⏸️ Paused';
+            document.getElementById('pause-match-btn').textContent = 'Resume';
+            document.getElementById('pause-match-btn').onclick = resumeMatch;
+        }
+
+        function resumeMatch() {
+            timerInterval = setInterval(updateTimer, 1000);
+            document.getElementById('match-status').innerHTML = '🟢 Live';
+            document.getElementById('pause-match-btn').textContent = 'Pause';
+            document.getElementById('pause-match-btn').onclick = pauseMatch;
+        }
+
+        function endMatch() {
+            clearInterval(timerInterval);
+            document.getElementById('match-status').innerHTML = '⏹️ Ended';
+            document.getElementById('start-match-btn').disabled = false;
+            document.getElementById('pause-match-btn').disabled = true;
+            document.getElementById('end-match-btn').disabled = true;
+        }
+
+        function updateTimer() {
+            if (!matchStartTime) return;
+            const elapsed = Math.floor((new Date() - matchStartTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('match-duration').textContent = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function updateScoreboard(scoreData) {
+            document.getElementById('player1-score').textContent = scoreData.player1_score || 0;
+            document.getElementById('player2-score').textContent = scoreData.player2_score || 0;
+            document.getElementById('player1-sets').textContent = scoreData.player1_sets || 0;
+            document.getElementById('player2-sets').textContent = scoreData.player2_sets || 0;
+            document.getElementById('current-set').textContent = scoreData.current_set || 1;
+            document.getElementById('current-server').textContent = scoreData.server || 'Player 1';
+        }
+
+        function addPointToList(pointData) {
+            const pointsList = document.getElementById('points-list');
+            if (pointsList.querySelector('p')) {
+                pointsList.innerHTML = '';
+            }
+
+            const pointElement = document.createElement('div');
+            pointElement.className = 'card fade-in';
+            pointElement.style.marginBottom = '1rem';
+            pointElement.style.padding = '1rem';
+            pointElement.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>Point ${pointData.point_number || '?'}</strong> - 
+                        Winner: ${pointData.winner || 'Unknown'}
+                    </div>
+                    <div style="color: var(--text-secondary);">
+                        Rally: ${pointData.rally_length || 0} shots
+                    </div>
+                </div>
+            `;
+            pointsList.insertBefore(pointElement, pointsList.firstChild);
+
+            // Keep only last 10 points
+            while (pointsList.children.length > 10) {
+                pointsList.removeChild(pointsList.lastChild);
+            }
+        }
+
+        function updateLiveStats(pointData) {
+            // Update stats (mock implementation)
+            const currentShots = parseInt(document.getElementById('total-shots').textContent) || 0;
+            document.getElementById('total-shots').textContent = currentShots + (pointData.rally_length || 0);
+            
+            const currentPoints = parseInt(document.getElementById('match-points').textContent) || 0;
+            document.getElementById('match-points').textContent = currentPoints + 1;
+        }
+    </script>
+</body>
+</html>

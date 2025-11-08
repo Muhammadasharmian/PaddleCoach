@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Stats - PaddleCoach</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">🏓 PaddleCoach</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/match">Live Match</a></li>
+                <li><a href="/stats" class="active">Player Stats</a></li>
+                <li><a href="/coaching">AI Coaching</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 style="margin-bottom: 2rem;">Player Statistics</h1>
+
+        <!-- Player Selection -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem;">Select Player</h3>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <select id="player-select" style="flex: 1; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); font-size: 1rem;">
+                    <option value="1">Player 1 - John Doe</option>
+                    <option value="2">Player 2 - Jane Smith</option>
+                    <option value="3">Player 3 - Mike Johnson</option>
+                </select>
+                <button class="btn btn-primary" onclick="loadPlayerStats()">Load Stats</button>
+            </div>
+        </div>
+
+        <!-- Overview Stats -->
+        <h2 style="margin-bottom: 1.5rem;">Performance Overview</h2>
+        <div class="stats-grid" style="margin-bottom: 3rem;">
+            <div class="stat-card">
+                <div class="stat-value" id="total-matches">24</div>
+                <div class="stat-label">Total Matches</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="win-rate">67%</div>
+                <div class="stat-label">Win Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avg-score">18.5</div>
+                <div class="stat-label">Avg Points/Match</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="total-points">444</div>
+                <div class="stat-label">Total Points Won</div>
+            </div>
+        </div>
+
+        <!-- Shot Statistics -->
+        <h2 style="margin-bottom: 1.5rem;">Shot Analysis</h2>
+        <div class="stats-grid" style="margin-bottom: 3rem;">
+            <div class="stat-card">
+                <div class="stat-value" id="forehand-acc">72%</div>
+                <div class="stat-label">Forehand Accuracy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="backhand-acc">65%</div>
+                <div class="stat-label">Backhand Accuracy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="serve-acc">82%</div>
+                <div class="stat-label">Serve Accuracy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="smash-rate">15%</div>
+                <div class="stat-label">Smash Success Rate</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+            <!-- Performance Trend -->
+            <div class="chart-container">
+                <h3 style="margin-bottom: 1.5rem;">Performance Trend</h3>
+                <canvas id="performance-chart"></canvas>
+            </div>
+
+            <!-- Shot Distribution -->
+            <div class="chart-container">
+                <h3 style="margin-bottom: 1.5rem;">Shot Type Distribution</h3>
+                <canvas id="shot-distribution-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Match History -->
+        <div class="card" style="margin-bottom: 3rem;">
+            <h3 style="margin-bottom: 1.5rem;">Recent Match History</h3>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: var(--light-bg); text-align: left;">
+                            <th style="padding: 1rem; border-bottom: 2px solid var(--border-color);">Date</th>
+                            <th style="padding: 1rem; border-bottom: 2px solid var(--border-color);">Opponent</th>
+                            <th style="padding: 1rem; border-bottom: 2px solid var(--border-color);">Score</th>
+                            <th style="padding: 1rem; border-bottom: 2px solid var(--border-color);">Result</th>
+                            <th style="padding: 1rem; border-bottom: 2px solid var(--border-color);">Points Won</th>
+                        </tr>
+                    </thead>
+                    <tbody id="match-history-body">
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">Nov 5, 2025</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">Jane Smith</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">3-2</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);"><span style="color: var(--secondary-color); font-weight: 600;">✓ Win</span></td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">21</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">Nov 3, 2025</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">Mike Johnson</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">1-3</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);"><span style="color: var(--danger-color); font-weight: 600;">✗ Loss</span></td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">14</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">Nov 1, 2025</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">Sarah Lee</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">3-1</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);"><span style="color: var(--secondary-color); font-weight: 600;">✓ Win</span></td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">19</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Stats Bot -->
+        <div class="card">
+            <h3 style="margin-bottom: 1.5rem;">💬 Ask About Your Stats</h3>
+            <div class="chat-container">
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message">
+                        <div class="message-content">
+                            <strong>StatsBot:</strong> Hi! I can answer questions about your performance. 
+                            Try asking: "How many matches did I win last month?" or "What's my best shot type?"
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="chat-input" placeholder="Ask a question about your stats...">
+                    <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/stats_visualizer.js') }}"></script>
+    <script>
+        // Initialize charts on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeCharts();
+        });
+
+        function loadPlayerStats() {
+            const playerId = document.getElementById('player-select').value;
+            // Fetch and update stats (will integrate with backend)
+            console.log('Loading stats for player:', playerId);
+            // Animation for loading
+            document.querySelectorAll('.stat-value').forEach(el => {
+                el.style.opacity = '0.5';
+                setTimeout(() => { el.style.opacity = '1'; }, 300);
+            });
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            // Add user message
+            addChatMessage(message, 'user');
+            input.value = '';
+
+            // Send to backend
+            fetch('/api/stats/query', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    addChatMessage(data.response, 'bot');
+                } else {
+                    addChatMessage('Sorry, I couldn\'t process that question.', 'bot');
+                }
+            })
+            .catch(error => {
+                addChatMessage('Error connecting to stats service.', 'bot');
+            });
+        }
+
+        function addChatMessage(text, sender) {
+            const messagesDiv = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = sender === 'bot' ? `<strong>StatsBot:</strong> ${text}` : text;
+            
+            messageDiv.appendChild(contentDiv);
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Allow Enter key to send message
+        document.getElementById('chat-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>

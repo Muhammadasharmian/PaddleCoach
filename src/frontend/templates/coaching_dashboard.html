@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Coaching - PaddleCoach</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">🏓 PaddleCoach</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/match">Live Match</a></li>
+                <li><a href="/stats">Player Stats</a></li>
+                <li><a href="/coaching" class="active">AI Coaching</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 style="margin-bottom: 2rem;">AI Coaching Dashboard</h1>
+
+        <!-- Coaching Modules -->
+        <div class="card-grid" style="margin-bottom: 3rem;">
+            <div class="card">
+                <div class="card-icon">🎯</div>
+                <h3>Pro Comparison</h3>
+                <p>Compare your technique with professional players using AI pose analysis</p>
+                <button class="btn btn-primary" onclick="activateModule('pro-comparison')">Start Comparison</button>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🎬</div>
+                <h3>Visual Demo</h3>
+                <p>Generate synthetic demonstration videos for improving specific techniques</p>
+                <button class="btn btn-primary" onclick="activateModule('visual-demo')">Generate Demo</button>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🎙️</div>
+                <h3>Live Coach</h3>
+                <p>Real-time coaching feedback powered by AI and RAG-based knowledge</p>
+                <button class="btn btn-primary" onclick="activateModule('live-coach')">Start Live Coaching</button>
+            </div>
+        </div>
+
+        <!-- Active Coaching Session -->
+        <div id="coaching-session" class="hidden">
+            <div class="coaching-grid">
+                <!-- Video Feed -->
+                <div>
+                    <div class="video-container">
+                        <video id="coaching-video" controls>
+                            <source src="" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div id="video-placeholder" style="color: white; text-align: center;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">📹</div>
+                            <p>Camera feed will appear here</p>
+                            <button class="btn btn-outline" style="margin-top: 1rem; border-color: white; color: white;" onclick="startCamera()">
+                                Start Camera
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Pose Overlay Canvas -->
+                    <canvas id="pose-canvas" style="display: none; position: absolute; top: 0; left: 0;"></canvas>
+
+                    <!-- Video Controls -->
+                    <div class="card" style="margin-top: 1rem;">
+                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                            <button class="btn btn-secondary" onclick="uploadVideo()">📁 Upload Video</button>
+                            <button class="btn btn-secondary" onclick="recordVideo()">⏺️ Record</button>
+                            <button class="btn btn-outline" onclick="togglePoseOverlay()">👤 Toggle Pose Overlay</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Insights Panel -->
+                <div class="insights-panel">
+                    <h3 style="margin-bottom: 1.5rem;">AI Coaching Insights</h3>
+                    <div id="insights-container">
+                        <div class="insight-item">
+                            <div class="insight-title">🎯 Technique Analysis</div>
+                            <div class="insight-description">
+                                Analyzing your form and technique in real-time...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Feedback -->
+                    <div style="margin-top: 2rem; padding: 1rem; background: var(--light-bg); border-radius: var(--border-radius);">
+                        <h4 style="margin-bottom: 1rem;">💬 Live Feedback</h4>
+                        <div id="live-feedback" style="max-height: 300px; overflow-y: auto;">
+                            <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                                Feedback will appear here during your session...
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Audio Commentary -->
+                    <div style="margin-top: 1.5rem;">
+                        <button class="btn btn-secondary" style="width: 100%;" onclick="playAudioCommentary()">
+                            🔊 Play Audio Commentary
+                        </button>
+                        <audio id="commentary-audio" style="width: 100%; margin-top: 1rem; display: none;"></audio>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coaching History -->
+        <div class="card" style="margin-top: 3rem;">
+            <h3 style="margin-bottom: 1.5rem;">Recent Coaching Sessions</h3>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: var(--light-bg); text-align: left;">
+                            <th style="padding: 1rem; border-bottom: 2px solid var(--border-color);">Date</th>
+                            <th style="padding: 1rem; border-bottom: 2px solid var(--border-color);">Module</th>
+                            <th style="padding: 1rem; border-bottom: 2px solid var(--border-color);">Duration</th>
+                            <th style="padding: 1rem; border-bottom: 2px solid var(--border-color);">Improvement Areas</th>
+                            <th style="padding: 1rem; border-bottom: 2px solid var(--border-color);">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">Nov 6, 2025</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">Pro Comparison</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">15 min</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">Forehand technique, Footwork</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                                <button class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.9rem;">View Report</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">Nov 4, 2025</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">Live Coach</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">22 min</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">Serve accuracy, Ball spin</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                                <button class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.9rem;">View Report</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">Nov 2, 2025</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">Visual Demo</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">8 min</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">Backhand stance</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                                <button class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.9rem;">View Report</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Progress Tracking -->
+        <div class="card" style="margin-top: 2rem;">
+            <h3 style="margin-bottom: 1.5rem;">Your Progress</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Coaching Sessions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3.5 hrs</div>
+                    <div class="stat-label">Total Training Time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">+24%</div>
+                    <div class="stat-label">Performance Improvement</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8/10</div>
+                    <div class="stat-label">Areas Mastered</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script>
+        let currentModule = null;
+        let cameraStream = null;
+
+        function activateModule(moduleName) {
+            currentModule = moduleName;
+            document.getElementById('coaching-session').classList.remove('hidden');
+            document.getElementById('coaching-session').scrollIntoView({ behavior: 'smooth' });
+            
+            // Update insights based on module
+            const insightsContainer = document.getElementById('insights-container');
+            const insights = {
+                'pro-comparison': [
+                    { title: '🎯 Stance Analysis', description: 'Your stance is 85% similar to professional player Ma Long. Consider widening your base slightly for better stability.' },
+                    { title: '💪 Arm Motion', description: 'Follow-through motion matches 78% with pro technique. Extend your arm more fully on forehand strokes.' },
+                    { title: '👣 Footwork', description: 'Good lateral movement. Work on faster recovery to ready position after shots.' }
+                ],
+                'visual-demo': [
+                    { title: '🎬 Demo Generated', description: 'A synthetic demonstration video has been created showing the correct backhand topspin technique.' },
+                    { title: '📊 Key Points', description: 'Watch for: 1) Low starting position, 2) Upward brush motion, 3) Weight transfer forward' },
+                    { title: '🔄 Practice Drill', description: 'Repeat this motion 20 times daily. Focus on consistency before adding speed.' }
+                ],
+                'live-coach': [
+                    { title: '🎙️ Real-time Analysis', description: 'Currently monitoring your technique. AI coach will provide feedback after each shot.' },
+                    { title: '📚 Knowledge Base', description: 'Drawing insights from professional training database and your personal history.' },
+                    { title: '🎯 Focus Areas', description: 'Today\'s session: Serve consistency and return of serve positioning.' }
+                ]
+            };
+
+            insightsContainer.innerHTML = insights[moduleName].map(insight => `
+                <div class="insight-item fade-in">
+                    <div class="insight-title">${insight.title}</div>
+                    <div class="insight-description">${insight.description}</div>
+                </div>
+            `).join('');
+
+            // Simulate live feedback
+            if (moduleName === 'live-coach') {
+                startLiveFeedback();
+            }
+        }
+
+        function startCamera() {
+            // Request camera access (simplified - full implementation would use MediaPipe)
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                .then(stream => {
+                    cameraStream = stream;
+                    const video = document.getElementById('coaching-video');
+                    video.srcObject = stream;
+                    video.play();
+                    document.getElementById('video-placeholder').style.display = 'none';
+                })
+                .catch(err => {
+                    alert('Camera access denied. Please allow camera permissions.');
+                });
+        }
+
+        function uploadVideo() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'video/*';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const video = document.getElementById('coaching-video');
+                    video.src = URL.createObjectURL(file);
+                    document.getElementById('video-placeholder').style.display = 'none';
+                }
+            };
+            input.click();
+        }
+
+        function recordVideo() {
+            alert('Recording feature will be implemented with full MediaPipe integration.');
+        }
+
+        function togglePoseOverlay() {
+            const canvas = document.getElementById('pose-canvas');
+            canvas.style.display = canvas.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function startLiveFeedback() {
+            const feedbackDiv = document.getElementById('live-feedback');
+            const feedbackMessages = [
+                '✓ Good serve placement',
+                '⚠️ Watch your follow-through on that backhand',
+                '✓ Excellent footwork on that rally',
+                '💡 Try adding more topspin to your forehand',
+                '✓ Great recovery to ready position'
+            ];
+
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index >= feedbackMessages.length) {
+                    clearInterval(interval);
+                    return;
+                }
+
+                const p = document.createElement('p');
+                p.className = 'fade-in';
+                p.style.padding = '0.5rem';
+                p.style.marginBottom = '0.5rem';
+                p.style.backgroundColor = 'white';
+                p.style.borderRadius = 'var(--border-radius)';
+                p.textContent = feedbackMessages[index];
+                feedbackDiv.appendChild(p);
+                feedbackDiv.scrollTop = feedbackDiv.scrollHeight;
+                
+                index++;
+            }, 3000);
+        }
+
+        function playAudioCommentary() {
+            const text = "Great job on that last rally. Your footwork is improving, but remember to keep your paddle angle consistent on backhand returns.";
+            
+            // Call backend to generate audio using ElevenLabs
+            fetch('/api/audio/commentary', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: text })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const audio = document.getElementById('commentary-audio');
+                    audio.src = data.audio_url;
+                    audio.style.display = 'block';
+                    audio.play();
+                } else {
+                    alert('Could not generate audio commentary');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Audio generation is currently unavailable (ElevenLabs integration pending)');
+            });
+        }
+    </script>
+</body>
+</html>
