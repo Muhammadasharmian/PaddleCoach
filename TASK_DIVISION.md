@@ -29,20 +29,21 @@ The project is divided into **4 independent subsystems** based on the Component 
   - `player_profile.py` - PlayerProfile class
   - `pose_data.py` - PoseData class
 - `src/vision/` - Vision tracking system
-  - `yolo_tracker.py` - YOLOv12N integration
-  - `faster_rcnn_tracker.py` - FasterRCNN integration
-  - `tracking_interface.py` - ITrackingData interface
-  - `ball_tracker.py` - Ball position tracking
+  - `ball_tracker.py` - OpenCV color space detection and contour tracking (ball color: #fa8b32)
   - `player_tracker.py` - Player movement tracking
+  - `tracking_interface.py` - ITrackingData interface
+  - `video_processor.py` - MP4 video processing and frame analysis
+  - `color_detection.py` - HSV color space conversion and filtering utilities
 
 #### Dependencies:
-- OpenCV, PyTorch, YOLOv12N, FasterRCNN models
+- OpenCV, NumPy
 - No dependencies on other team members initially
 
 #### Deliverables:
 1. Complete data model classes with all attributes and methods
-2. Vision system that outputs ball/player coordinates
-3. ITrackingData interface for other components to consume
+2. OpenCV-based ball tracking system using color detection (orange ball #fa8b32)
+3. MP4 video processing pipeline for real-time and recorded match analysis
+4. ITrackingData interface for other components to consume
 
 ---
 
@@ -342,9 +343,10 @@ git push origin <yourname>/<feature>
 ## 🎓 Learning Resources
 
 ### Ashwani (Vision & Models)
-- YOLOv12N documentation
-- OpenCV Python tutorials
+- OpenCV Python tutorials (color space conversion, contour detection)
+- HSV color space and morphological operations
 - Object-oriented design patterns
+- Video processing with OpenCV (cv2.VideoCapture)
 
 ### Ashar (Analytics & Database)
 - MySQL + Python integration
