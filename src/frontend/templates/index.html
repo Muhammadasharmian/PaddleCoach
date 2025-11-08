@@ -7,143 +7,194 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                🏓 PaddleCoach
+                <span class="logo-icon">🏓</span>
+                <span class="logo-text">PADDLECOACH</span>
             </div>
             <ul class="nav-links">
-                <li><a href="/" class="active">Home</a></li>
-                <li><a href="/match">Live Match</a></li>
-                <li><a href="/stats">Player Stats</a></li>
-                <li><a href="/coaching">AI Coaching</a></li>
+                <li><a href="/">Play Now</a></li>
+                <li><a href="/match">How to Play</a></li>
+                <li><a href="/stats">Resources</a></li>
+                <li><a href="/coaching">Promos</a></li>
             </ul>
             <div class="auth-section">
-                <div class="auth-dropdown" id="authDropdown">
-                    <button class="auth-btn" onclick="toggleAuthDropdown()">
-                        <span id="authBtnText">Account</span> ▼
-                    </button>
-                    <div class="dropdown-menu" id="dropdownMenu">
-                        <div class="dropdown-item" onclick="showLoginModal()">
-                            🔐 Log In
-                        </div>
-                        <div class="dropdown-item" onclick="showSignupModal()">
-                            ✨ Sign Up
-                        </div>
-                    </div>
-                </div>
+                <button class="btn-signup" onclick="showSignupModal()">Sign Up</button>
+                <button class="btn-login" onclick="showLoginModal()">Log In</button>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <div class="container">
-        <div class="hero fade-in">
-            <h1>Welcome to PaddleCoach</h1>
-            <p>AI-Powered Ping Pong Analytics & Coaching Platform</p>
-            <p style="margin-top: 1rem; font-size: 1rem; opacity: 0.8;">
-                Real-time match tracking | Advanced analytics | Professional coaching insights
-            </p>
+    <div class="hero-wrapper">
+        <div class="hero-content">
+            <div class="hero-left">
+                <div class="hero-badge">America's #1 Ping Pong Analytics App</div>
+                <h1 class="hero-title">
+                    <span class="title-line">Track</span>
+                    <div class="title-pill-container">
+                        <span class="title-line">Analyze</span>
+                        <div class="title-pill">
+                            <span class="pill-text">Improve</span>
+                        </div>
+                    </div>
+                    <span class="title-line-italic">Win!</span>
+                </h1>
+                
+                <div class="hero-cta">
+                    <div class="cta-label">New Users</div>
+                    <h2 class="cta-headline">Start Free Get Pro Instantly</h2>
+                    <p class="cta-subtext">In Your First Match</p>
+                    <button class="btn-cta" onclick="showSignupModal()">Start Your First Match Now</button>
+                </div>
+
+                <div class="app-badges">
+                    <div class="badge-item">
+                        <span class="badge-icon">📱</span>
+                        <span>App Store</span>
+                    </div>
+                    <div class="badge-item">
+                        <span class="badge-icon">🤖</span>
+                        <span>Google Play</span>
+                    </div>
+                    <div class="rating">⭐⭐⭐⭐⭐ 400K Ratings</div>
+                </div>
+            </div>
+
+            <div class="hero-right">
+                <div class="hero-image-container">
+                    <div class="phone-mockup">
+                        <div class="phone-content">
+                            <div class="app-header">🏓 PADDLECOACH</div>
+                            <div class="match-card">
+                                <div class="match-badge">LIVE MATCH</div>
+                                <div class="match-score">
+                                    <div class="player-info">
+                                        <div class="player-name">Player 1</div>
+                                        <div class="score-big">15</div>
+                                    </div>
+                                    <div class="vs">VS</div>
+                                    <div class="player-info">
+                                        <div class="player-name">Player 2</div>
+                                        <div class="score-big">12</div>
+                                    </div>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="action-btn win">Win</button>
+                                    <button class="action-btn lose">Lose</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-player-image">🏓</div>
+                </div>
+            </div>
         </div>
-
-        <!-- Features Grid -->
-        <div class="card-grid">
-            <!-- Live Match Tracking -->
-            <div class="card fade-in">
-                <div class="card-icon">📊</div>
-                <h3>Live Match Tracking</h3>
-                <p>Track matches in real-time with AI-powered ball and player detection. Get instant score updates and detailed shot analysis.</p>
-                <a href="/match" class="btn btn-primary">Start Tracking</a>
-            </div>
-
-            <!-- Player Statistics -->
-            <div class="card fade-in" style="animation-delay: 0.1s;">
-                <div class="card-icon">📈</div>
-                <h3>Player Statistics</h3>
-                <p>Comprehensive analytics on player performance, shot accuracy, movement patterns, and historical trends.</p>
-                <a href="/stats" class="btn btn-primary">View Stats</a>
-            </div>
-
-            <!-- AI Coaching -->
-            <div class="card fade-in" style="animation-delay: 0.2s;">
-                <div class="card-icon">🤖</div>
-                <h3>AI Coaching</h3>
-                <p>Get personalized coaching insights powered by advanced AI. Compare your technique with professionals and receive real-time feedback.</p>
-                <a href="/coaching" class="btn btn-primary">Get Coached</a>
-            </div>
-        </div>
-
-        <!-- Features Showcase -->
-        <section style="margin-top: 4rem;">
-            <h2 style="text-align: center; margin-bottom: 2rem; font-size: 2rem;">Platform Features</h2>
-            
-            <div class="card-grid">
-                <div class="card">
-                    <h3>🎥 Computer Vision</h3>
-                    <p>Advanced tracking using YOLOv12N and Faster R-CNN for precise ball and player detection</p>
-                </div>
-
-                <div class="card">
-                    <h3>⚡ Real-time Updates</h3>
-                    <p>WebSocket-powered live score updates and match progression</p>
-                </div>
-
-                <div class="card">
-                    <h3>🎯 Shot Analysis</h3>
-                    <p>Detailed breakdown of every shot including type, speed, spin, and placement</p>
-                </div>
-
-                <div class="card">
-                    <h3>📊 Advanced Analytics</h3>
-                    <p>Comprehensive statistics with beautiful visualizations and interactive charts</p>
-                </div>
-
-                <div class="card">
-                    <h3>🏆 Pro Comparison</h3>
-                    <p>Compare your technique with professional players using pose estimation</p>
-                </div>
-
-                <div class="card">
-                    <h3>💬 Stats Bot</h3>
-                    <p>Ask questions about your performance in natural language</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Getting Started -->
-        <section style="margin-top: 4rem; margin-bottom: 4rem;">
-            <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                <h2 style="color: white; margin-bottom: 1rem;">Getting Started</h2>
-                <ol style="margin-left: 1.5rem; line-height: 2;">
-                    <li>Set up your camera to capture the ping pong table</li>
-                    <li>Start a new match from the Live Match page</li>
-                    <li>The AI will automatically track ball and player movements</li>
-                    <li>View real-time statistics and coaching insights</li>
-                    <li>Review match history and improve your game!</li>
-                </ol>
-                <div style="margin-top: 2rem;">
-                    <a href="/match" class="btn btn-outline" style="border-color: white; color: white;">
-                        Start Your First Match →
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer style="text-align: center; padding: 2rem 0; color: var(--text-secondary); border-top: 1px solid var(--border-color);">
-            <p>🏓 PaddleCoach - AI-Powered Ping Pong Analytics Platform</p>
-            <p style="margin-top: 0.5rem; font-size: 0.9rem;">
-                Built with ❤️ by Team PaddleCoach | © 2025
-            </p>
-            <p style="margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.7;">
-                Frontend by Rakshit
-            </p>
-        </footer>
     </div>
+
+    <!-- Features Section -->
+    <div class="features-section">
+        <div class="container-wide">
+            <h2 class="section-title">How It Works</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Live Match Tracking</h3>
+                    <p>AI-powered real-time ball and player detection with instant score updates</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Advanced Analytics</h3>
+                    <p>Comprehensive performance metrics and historical trend analysis</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Coaching</h3>
+                    <p>Personalized insights and technique comparison with professionals</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Shot Analysis</h3>
+                    <p>Detailed breakdown of every shot: type, speed, spin, and placement</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Social Proof Section -->
+    <div class="social-proof-section">
+        <div class="container-wide">
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <div class="quote-icon">"</div>
+                    <p class="testimonial-text">PaddleCoach transformed my game! The AI insights are incredibly accurate.</p>
+                    <div class="testimonial-author">- Pro Player</div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="quote-icon">"</div>
+                    <p class="testimonial-text">Best ping pong analytics platform. Easy to use and powerful features!</p>
+                    <div class="testimonial-author">- Coach</div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="quote-icon">"</div>
+                    <p class="testimonial-text">Real-time tracking is a game changer. Improved my win rate by 40%!</p>
+                    <div class="testimonial-author">- Amateur Player</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="final-cta-section">
+        <div class="container-wide">
+            <div class="final-cta-card">
+                <h2 class="final-cta-title">Ready to Elevate Your Game?</h2>
+                <p class="final-cta-subtitle">Join thousands of players improving their skills with AI-powered analytics</p>
+                <button class="btn-final-cta" onclick="showSignupModal()">Start Free Trial Now</button>
+                <p class="final-cta-note">No credit card required • 30-day free trial</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container-wide">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">🏓 PADDLECOACH</div>
+                    <p class="footer-tagline">AI-Powered Ping Pong Analytics</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <a href="/match">Live Match</a>
+                        <a href="/stats">Player Stats</a>
+                        <a href="/coaching">AI Coaching</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <a href="#">About</a>
+                        <a href="#">Blog</a>
+                        <a href="#">Careers</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Support</h4>
+                        <a href="#">Help Center</a>
+                        <a href="#">Contact</a>
+                        <a href="#">Privacy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 PaddleCoach. All rights reserved. Built by Rakshit</p>
+            </div>
+        </div>
+    </footer>
 
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
