@@ -5,7 +5,7 @@ Description: Web interface for real-time match tracking, stats visualization, an
 """
 
 from flask import Flask, render_template, jsonify, request
-from flask_socketio import SocketIO, emit
+# from flask_socketio import SocketIO, emit  # Commented out for now
 from datetime import datetime
 import sys
 import os
@@ -16,15 +16,17 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ui_services.ui_data_service import UIDataService
 from ui_services.stats_bot import StatsBot
 from ui_services.elevenlabs_client import ElevenLabsClient
+from ui_services.auth_service import AuthService
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'paddlecoach_secret_key_2025'
-socketio = SocketIO(app, cors_allowed_origins="*")
+# socketio = SocketIO(app, cors_allowed_origins="*")  # Commented out for now
 
 # Initialize services
 ui_data_service = UIDataService()
 stats_bot = StatsBot()
 elevenlabs_client = ElevenLabsClient()
+auth_service = AuthService()
 
 # ==================== ROUTES ====================
 
@@ -146,41 +148,149 @@ def generate_commentary():
             'error': str(e)
         }), 500
 
+# ==================== AUTHENTICATION ENDPOINTS ====================
+
+@app.route('/api/auth/signup', methods=['POST'])
+def signup():
+    """Handle user signup"""
+    try:
+        data = request.json
+        name = data.get('name')
+        email = data.get('email')
+        password = data.get('password')
+        
+        if not all([name, email, password]):
+            return jsonify({
+                'success': False,
+                'message': 'All fields are required'
+            }), 400
+        
+        result = auth_service.signup(name, email, password)
+        status_code = 200 if result['success'] else 400
+        
+        return jsonify(result), status_code
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Signup error: {str(e)}'
+        }), 500
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    """Handle user login"""
+    try:
+        data = request.json
+        email = data.get('email')
+        password = data.get('password')
+        
+        if not all([email, password]):
+            return jsonify({
+                'success': False,
+                'message': 'Email and password are required'
+            }), 400
+        
+        result = auth_service.login(email, password)
+        status_code = 200 if result['success'] else 401
+        
+        return jsonify(result), status_code
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Login error: {str(e)}'
+        }), 500
+
+@app.route('/api/auth/logout', methods=['POST'])
+def logout():
+    """Handle user logout"""
+    try:
+        data = request.json
+        token = data.get('token')
+        
+        if not token:
+            return jsonify({
+                'success': False,
+                'message': 'Token is required'
+            }), 400
+        
+        result = auth_service.logout(token)
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Logout error: {str(e)}'
+        }), 500
+
+@app.route('/api/auth/verify', methods=['POST'])
+def verify_token():
+    """Verify session token"""
+    try:
+        data = request.json
+        token = data.get('token')
+        
+        if not token:
+            return jsonify({
+                'success': False,
+                'message': 'Token is required'
+            }), 400
+        
+        user = auth_service.verify_token(token)
+        
+        if user:
+            return jsonify({
+                'success': True,
+                'user': user
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Invalid token'
+            }), 401
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Verification error: {str(e)}'
+        }), 500
+
 # ==================== WEBSOCKET EVENTS ====================
+# Commented out for now - WebSocket functionality disabled
 
-@socketio.on('connect')
-def handle_connect():
-    """Handle client connection"""
-    print(f'Client connected: {request.sid}')
-    emit('connection_response', {'status': 'connected'})
+# @socketio.on('connect')
+# def handle_connect():
+#     """Handle client connection"""
+#     print(f'Client connected: {request.sid}')
+#     emit('connection_response', {'status': 'connected'})
 
-@socketio.on('disconnect')
-def handle_disconnect():
-    """Handle client disconnection"""
-    print(f'Client disconnected: {request.sid}')
+# @socketio.on('disconnect')
+# def handle_disconnect():
+#     """Handle client disconnection"""
+#     print(f'Client disconnected: {request.sid}')
 
-@socketio.on('subscribe_match')
-def handle_match_subscription(data):
-    """Subscribe to real-time match updates"""
-    match_id = data.get('match_id')
-    print(f'Client {request.sid} subscribed to match {match_id}')
-    emit('subscription_confirmed', {'match_id': match_id})
+# @socketio.on('subscribe_match')
+# def handle_match_subscription(data):
+#     """Subscribe to real-time match updates"""
+#     match_id = data.get('match_id')
+#     print(f'Client {request.sid} subscribed to match {match_id}')
+#     emit('subscription_confirmed', {'match_id': match_id})
 
-def broadcast_score_update(match_id, score_data):
-    """Broadcast score update to all connected clients"""
-    socketio.emit('score_update', {
-        'match_id': match_id,
-        'score_data': score_data,
-        'timestamp': datetime.now().isoformat()
-    })
+# def broadcast_score_update(match_id, score_data):
+#     """Broadcast score update to all connected clients"""
+#     socketio.emit('score_update', {
+#         'match_id': match_id,
+#         'score_data': score_data,
+#         'timestamp': datetime.now().isoformat()
+#     })
 
-def broadcast_point_complete(match_id, point_data):
-    """Broadcast point completion to all connected clients"""
-    socketio.emit('point_complete', {
-        'match_id': match_id,
-        'point_data': point_data,
-        'timestamp': datetime.now().isoformat()
-    })
+# def broadcast_point_complete(match_id, point_data):
+#     """Broadcast point completion to all connected clients"""
+#     socketio.emit('point_complete', {
+#         'match_id': match_id,
+#         'point_data': point_data,
+#         'timestamp': datetime.now().isoformat()
+#     })
 
 # ==================== ERROR HANDLERS ====================
 
@@ -202,4 +312,5 @@ def internal_error(error):
 if __name__ == '__main__':
     print("🏓 Starting PaddleCoach Web Application...")
     print("📍 Access the app at: http://localhost:5000")
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+    # Using Flask's built-in server (without socketio for now)
+    app.run(host='0.0.0.0', port=5000, debug=True)
