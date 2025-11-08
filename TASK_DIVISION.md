@@ -4,7 +4,7 @@
 - **Ashwani**
 - **Mohnish**
 - **Ashar**
-- **Raks**
+- **Rakshit**
 
 ---
 
