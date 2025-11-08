@@ -1,0 +1,182 @@
+[
+  {
+    "id": "kb_001",
+    "category": "forehand_topspin",
+    "keywords": ["forehand", "topspin", "spin", "power"],
+    "difficulty": "intermediate",
+    "tip": "For a powerful forehand topspin, start your swing from below the ball and brush upward through contact. Weight should transfer from back foot to front foot. Think 'low to high' with your paddle path.",
+    "common_mistakes": ["Hitting flat", "No weight transfer", "Arm-only swing"],
+    "drills": ["Multi-ball topspin practice", "Shadow swings focusing on hip rotation"]
+  },
+  {
+    "id": "kb_002",
+    "category": "backhand_control",
+    "keywords": ["backhand", "control", "consistency"],
+    "difficulty": "beginner",
+    "tip": "On backhand shots, keep your elbow close to your body for better control. Contact the ball at the peak of its bounce when possible. Use a compact stroke rather than a large backswing.",
+    "common_mistakes": ["Elbow too far from body", "Late contact", "Over-swinging"],
+    "drills": ["Backhand block drills", "Target practice to specific table zones"]
+  },
+  {
+    "id": "kb_003",
+    "category": "serve_technique",
+    "keywords": ["serve", "spin", "toss"],
+    "difficulty": "intermediate",
+    "tip": "A good serve uses wrist snap to generate spin. Toss the ball at least 6 inches high and contact it at the highest point you can comfortably reach. The ball must be in your open palm before the toss.",
+    "common_mistakes": ["Toss too low", "No wrist snap", "Illegal toss from fingers"],
+    "drills": ["Serve practice focusing on spin variation", "Target serves to corners"]
+  },
+  {
+    "id": "kb_004",
+    "category": "footwork",
+    "keywords": ["footwork", "movement", "position", "stance"],
+    "difficulty": "beginner",
+    "tip": "Always return to ready position after each shot. Stay on the balls of your feet for quick movement in any direction. Use small, quick steps rather than large leaps.",
+    "common_mistakes": ["Flat-footed stance", "Not returning to center", "Poor recovery"],
+    "drills": ["Side-to-side footwork drills", "Random ball placement practice"]
+  },
+  {
+    "id": "kb_005",
+    "category": "shot_placement",
+    "keywords": ["placement", "strategy", "crosscourt", "angles"],
+    "difficulty": "intermediate",
+    "tip": "Vary your shot placement. Crosscourt shots are safer and create better angles. Down-the-line shots are riskier but can catch opponents off guard. Mix deep and short shots to disrupt opponent rhythm.",
+    "common_mistakes": ["Predictable placement", "Always going for winners", "Poor angle creation"],
+    "drills": ["Pattern play exercises", "Alternating crosscourt and down-the-line"]
+  },
+  {
+    "id": "kb_006",
+    "category": "power_generation",
+    "keywords": ["power", "speed", "fast", "acceleration"],
+    "difficulty": "advanced",
+    "tip": "Power comes from your legs and core, not just your arm. Rotate your hips and shoulders to generate speed. The kinetic chain goes: legs → hips → shoulders → arm → wrist. Time it properly for maximum power.",
+    "common_mistakes": ["All-arm swing", "No hip rotation", "Poor timing of chain"],
+    "drills": ["Medicine ball rotations", "Progressive power building drills"]
+  },
+  {
+    "id": "kb_007",
+    "category": "consistency",
+    "keywords": ["consistency", "control", "error", "mistakes"],
+    "difficulty": "beginner",
+    "tip": "Consistency beats power. Aim to keep the ball on the table rather than going for winners every shot. Make your opponent earn their points by forcing them to hit one more ball.",
+    "common_mistakes": ["Over-aggressive play", "Going for winners too early", "Poor shot selection"],
+    "drills": ["Long rally practice", "Consistency challenges (e.g., 50 balls in a row)"]
+  },
+  {
+    "id": "kb_008",
+    "category": "defense",
+    "keywords": ["defense", "block", "counter", "pressure"],
+    "difficulty": "intermediate",
+    "tip": "When under pressure, focus on returning the ball deep to the opponent's side. This buys you time to recover position. Keep your paddle angle slightly closed to control fast incoming balls.",
+    "common_mistakes": ["Open paddle face", "Returning short", "Poor positioning recovery"],
+    "drills": ["Defense against topspin", "Block and counter exercises"]
+  },
+  {
+    "id": "kb_009",
+    "category": "timing",
+    "keywords": ["timing", "contact", "early", "late", "rhythm"],
+    "difficulty": "intermediate",
+    "tip": "Hit the ball at the top of its bounce for maximum control. Early timing gives you less time but more pace; late timing gives more spin. Find the right timing for each shot type.",
+    "common_mistakes": ["Inconsistent timing", "Always hitting on the rise", "Waiting too long"],
+    "drills": ["Ball machine at different speeds", "Focus on bounce apex contact"]
+  },
+  {
+    "id": "kb_010",
+    "category": "mental_game",
+    "keywords": ["mental", "focus", "concentration", "pressure"],
+    "difficulty": "beginner",
+    "tip": "Stay focused on the ball, not the score. Play one point at a time and don't dwell on mistakes. Take deep breaths between points to stay calm under pressure.",
+    "common_mistakes": ["Getting distracted", "Thinking about score during rally", "Dwelling on errors"],
+    "drills": ["Meditation and breathing exercises", "Pressure situation practice"]
+  },
+  {
+    "id": "kb_011",
+    "category": "receive_serve",
+    "keywords": ["receive", "return", "serve"],
+    "difficulty": "intermediate",
+    "tip": "When receiving serve, watch the server's paddle contact carefully to read the spin. Adjust your paddle angle accordingly - closed for topspin, open for backspin. Stay light on your feet.",
+    "common_mistakes": ["Not reading spin", "Wrong paddle angle", "Static positioning"],
+    "drills": ["Multi-ball serve receive", "Spin recognition exercises"]
+  },
+  {
+    "id": "kb_012",
+    "category": "loop_technique",
+    "keywords": ["loop", "topspin", "spin", "forehand"],
+    "difficulty": "advanced",
+    "tip": "The loop (heavy topspin) requires a low-to-high swing path with a closed paddle face. Brush the ball more than you hit it. Generate speed with your legs and core rotation, not just your arm.",
+    "common_mistakes": ["Hitting instead of brushing", "Open paddle face", "No leg drive"],
+    "drills": ["Loop against backspin", "Multi-ball loop practice"]
+  },
+  {
+    "id": "kb_013",
+    "category": "short_game",
+    "keywords": ["short", "drop", "touch", "control"],
+    "difficulty": "advanced",
+    "tip": "Short shots near the net require excellent touch and control. Use your wrist for fine adjustments. The key is to keep the ball low and close to the net, forcing your opponent forward.",
+    "common_mistakes": ["Ball too high", "Too much power", "Predictable placement"],
+    "drills": ["Short ball exercises", "Touch and feel drills"]
+  },
+  {
+    "id": "kb_014",
+    "category": "counter_loop",
+    "keywords": ["counter", "topspin", "attack", "aggressive"],
+    "difficulty": "advanced",
+    "tip": "When counter-looping (attacking topspin with topspin), keep your paddle more closed than normal. Time the ball at the peak or early on the descent. Use your opponent's spin to your advantage.",
+    "common_mistakes": ["Paddle too open", "Late timing", "Insufficient spin"],
+    "drills": ["Counter-loop drills", "Rally with both players looping"]
+  },
+  {
+    "id": "kb_015",
+    "category": "table_positioning",
+    "keywords": ["position", "distance", "table", "stance"],
+    "difficulty": "beginner",
+    "tip": "Your distance from the table depends on your style and the situation. For aggressive play, stay close (1-2 feet). For defensive play, move back (3-4 feet). Adjust based on opponent's shots.",
+    "common_mistakes": ["Too far from table", "Static positioning", "Not adjusting to situation"],
+    "drills": ["Position awareness drills", "Practice different distances"]
+  },
+  {
+    "id": "kb_016",
+    "category": "spin_variation",
+    "keywords": ["spin", "variation", "sidespin", "no-spin"],
+    "difficulty": "advanced",
+    "tip": "Mix up your spin to keep opponents guessing. Combine topspin, backspin, sidespin, and no-spin serves and shots. The more varied your spin, the harder you are to read.",
+    "common_mistakes": ["Predictable spin", "Only using topspin", "Poor spin control"],
+    "drills": ["Spin variation exercises", "Serve with different spins in sequence"]
+  },
+  {
+    "id": "kb_017",
+    "category": "third_ball_attack",
+    "keywords": ["serve", "attack", "third", "aggressive"],
+    "difficulty": "intermediate",
+    "tip": "The third ball (your first shot after serving) is a key opportunity to attack. Set up your serve to get a weak return, then attack aggressively with your third ball.",
+    "common_mistakes": ["Passive third ball", "Poor serve setup", "Missing opportunities"],
+    "drills": ["Serve and attack patterns", "Third ball attack scenarios"]
+  },
+  {
+    "id": "kb_018",
+    "category": "reading_opponent",
+    "keywords": ["opponent", "read", "anticipate", "strategy"],
+    "difficulty": "intermediate",
+    "tip": "Watch your opponent's body position and paddle angle to anticipate their shots. Notice patterns in their play. Good players adjust their strategy based on opponent weaknesses.",
+    "common_mistakes": ["Not watching opponent", "Ignoring patterns", "Inflexible strategy"],
+    "drills": ["Video analysis", "Practice with variety of playing styles"]
+  },
+  {
+    "id": "kb_019",
+    "category": "warm_up",
+    "keywords": ["warm", "practice", "preparation", "training"],
+    "difficulty": "beginner",
+    "tip": "Always warm up before playing. Start with gentle rallies, then progress to more aggressive shots. Warm up all shot types: forehand, backhand, serves, and movement.",
+    "common_mistakes": ["No warm-up", "Starting too aggressive", "Skipping certain shots"],
+    "drills": ["Progressive warm-up routine", "5-10 minutes pre-match preparation"]
+  },
+  {
+    "id": "kb_020",
+    "category": "grip",
+    "keywords": ["grip", "hold", "paddle", "racket"],
+    "difficulty": "beginner",
+    "tip": "The most common grip is the shakehand grip (like shaking hands with the paddle). Keep a relaxed grip - tension reduces feel and control. Adjust grip pressure based on shot type.",
+    "common_mistakes": ["Grip too tight", "Wrong grip type for style", "Not adjusting grip"],
+    "drills": ["Grip awareness exercises", "Practice shot types with proper grip"]
+  }
+]
