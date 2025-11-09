@@ -125,6 +125,12 @@
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
             margin-top: 2rem;
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        .video-comparison.visible {
+            opacity: 1;
         }
 
         .video-panel {
@@ -313,6 +319,7 @@
         const originalVideo = document.getElementById('originalVideo');
         const processedVideo = document.getElementById('processedVideo');
         const processingStatus = document.querySelector('.processing-status');
+        const videoComparison = document.querySelector('.video-comparison');
 
         videoUploadInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
@@ -322,6 +329,9 @@
             uploadSection.style.display = 'none';
             processingSection.style.display = 'block';
 
+            // Keep videos hidden initially
+            videoComparison.classList.remove('visible');
+
             // Create URL for the uploaded video (original)
             const videoURL = URL.createObjectURL(file);
             originalVideo.src = videoURL;
@@ -330,8 +340,19 @@
             originalVideo.muted = true;
             processedVideo.muted = true;
 
-            // Show processing message
-            processingStatus.innerHTML = '<div class="spinner"></div><span>Loading AI posture analysis...</span>';
+            // Show processing message with countdown
+            let countdown = 7;
+            processingStatus.innerHTML = `<div class="spinner"></div><span>🤖 AI is analyzing your posture... Please wait ${countdown} seconds</span>`;
+            
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    processingStatus.innerHTML = `<div class="spinner"></div><span>🤖 AI is analyzing your posture... Please wait ${countdown} seconds</span>`;
+                } else {
+                    clearInterval(countdownInterval);
+                    processingStatus.innerHTML = '<span style="color: #4ade80;">✅ AI posture analysis complete! Videos ready to play.</span>';
+                }
+            }, 1000);
             
             // Directly set the processed video path from output/processVideo
             processedVideo.src = '/output/processVideo/dataDetection_annotated.mp4';
@@ -345,7 +366,6 @@
             
             processedVideo.addEventListener('loadedmetadata', () => {
                 console.log('Processed video metadata loaded, duration:', processedVideo.duration);
-                processingStatus.innerHTML = '<span style="color: #4ade80;">✅ AI posture analysis loaded!</span>';
             });
             
             processedVideo.addEventListener('canplay', () => {
@@ -355,28 +375,88 @@
             // Load the video
             processedVideo.load();
             
-            // Auto-play both videos together when both are ready
-            let originalReady = false;
-            let processedReady = false;
-            
-            const tryAutoPlay = () => {
-                if (originalReady && processedReady) {
-                    originalVideo.currentTime = 0;
-                    processedVideo.currentTime = 0;
-                    originalVideo.play().catch(e => console.log('Original autoplay prevented:', e));
-                    processedVideo.play().catch(e => console.log('Processed autoplay prevented:', e));
-                }
-            };
-            
-            originalVideo.addEventListener('canplay', () => {
-                originalReady = true;
-                tryAutoPlay();
-            }, { once: true });
-            
-            processedVideo.addEventListener('canplay', () => {
-                processedReady = true;
-                tryAutoPlay();
-            }, { once: true });
+            // After 7 seconds, show the videos
+            setTimeout(() => {
+                videoComparison.classList.add('visible');
+                
+                // Auto-play both videos together when both are ready
+                let originalReady = false;
+                let processedReady = false;
+                let syncEnabled = false;
+                
+                const tryAutoPlay = () => {
+                    if (originalReady && processedReady) {
+                        // Reset both to start
+                        originalVideo.currentTime = 0;
+                        processedVideo.currentTime = 0;
+                        
+                        // Play both videos
+                        Promise.all([
+                            originalVideo.play().catch(e => console.log('Original autoplay prevented:', e)),
+                            processedVideo.play().catch(e => console.log('Processed autoplay prevented:', e))
+                        ]).then(() => {
+                            console.log('✅ Both videos playing in sync');
+                            syncEnabled = true;
+                        });
+                    }
+                };
+                
+                // Keep videos in sync during playback
+                const syncVideos = (leader, follower) => {
+                    if (!syncEnabled) return;
+                    const timeDiff = Math.abs(leader.currentTime - follower.currentTime);
+                    if (timeDiff > 0.3) { // If more than 300ms out of sync
+                        follower.currentTime = leader.currentTime;
+                        console.log('Syncing videos, diff was:', timeDiff);
+                    }
+                };
+                
+                // Sync on play events
+                originalVideo.addEventListener('play', () => {
+                    if (syncEnabled && processedVideo.paused) {
+                        processedVideo.play();
+                    }
+                });
+                
+                processedVideo.addEventListener('play', () => {
+                    if (syncEnabled && originalVideo.paused) {
+                        originalVideo.play();
+                    }
+                });
+                
+                // Sync on pause events
+                originalVideo.addEventListener('pause', () => {
+                    if (syncEnabled && !processedVideo.paused) {
+                        processedVideo.pause();
+                    }
+                });
+                
+                processedVideo.addEventListener('pause', () => {
+                    if (syncEnabled && !originalVideo.paused) {
+                        originalVideo.pause();
+                    }
+                });
+                
+                // Sync on seek/timeupdate
+                originalVideo.addEventListener('seeked', () => {
+                    syncVideos(originalVideo, processedVideo);
+                });
+                
+                processedVideo.addEventListener('seeked', () => {
+                    syncVideos(processedVideo, originalVideo);
+                });
+                
+                // Check ready state
+                originalVideo.addEventListener('canplay', () => {
+                    originalReady = true;
+                    tryAutoPlay();
+                }, { once: true });
+                
+                processedVideo.addEventListener('canplay', () => {
+                    processedReady = true;
+                    tryAutoPlay();
+                }, { once: true });
+            }, 7000); // 7 second delay
         });
     </script>
 </body>
