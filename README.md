@@ -163,6 +163,8 @@ PaddleCoach/
 
 - **Muhammad Ashar Mian** - [@Muhammadasharmian](https://github.com/Muhammadasharmian)
 - **Mohnish** - [@mohnish-dev](https://github.com/mohnish-dev)
+- **Rakshit Jaiswal** - [@Raksj12](https://github.com/Raksj12)
+- **Ashwani** - [@Ashwani564](https://github.com/Ashwani564)
 
 ---
 
