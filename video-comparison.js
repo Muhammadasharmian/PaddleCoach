@@ -60,20 +60,28 @@ const playbackSpeeds = [0.5, 1, 1.5, 2];
 // Load videos from IndexedDB on page load
 async function initializeVideos() {
     try {
-        console.log('Loading videos from IndexedDB...');
+        console.log('Loading videos...');
         
-        // Get video files from IndexedDB
+        // Check if we should use local analyzed video
+        const useLocalAnalyzedVideo = sessionStorage.getItem('useLocalAnalyzedVideo') === 'true';
+        
+        // Get uploaded video file from IndexedDB
         professionalVideoFile = await getVideoFromIndexedDB('professional');
-        yourVideoFile = await getVideoFromIndexedDB('your');
-        
-        // Create blob URLs from the files
         professionalVideoURL = URL.createObjectURL(professionalVideoFile);
-        yourVideoURL = URL.createObjectURL(yourVideoFile);
+        console.log('✓ Original video URL created');
         
-        console.log('✓ Professional video URL created');
-        console.log('✓ Your video URL created');
+        if (useLocalAnalyzedVideo) {
+            // Use local analyzed_video.mp4 file
+            yourVideoURL = 'analyzed_video.mp4';
+            console.log('✓ Using local analyzed_video.mp4');
+        } else {
+            // Load from IndexedDB (legacy support)
+            yourVideoFile = await getVideoFromIndexedDB('your');
+            yourVideoURL = URL.createObjectURL(yourVideoFile);
+            console.log('✓ Analyzed video URL created from IndexedDB');
+        }
+        
         console.log('Videos ready for playback');
-        
         return true;
     } catch (error) {
         console.error('Error loading videos:', error);

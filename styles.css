@@ -2094,6 +2094,11 @@ html {
     justify-content: center;
 }
 
+.upload-options.single-upload {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
 .upload-option-card {
     flex: 1;
     background: #F8FAFC;

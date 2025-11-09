@@ -925,14 +925,11 @@ if (logoutButton) {
 const uploadMatchVideoBtn = document.getElementById('uploadMatchVideoBtn');
 const uploadVideoModal = document.getElementById('uploadVideoModal');
 const closeUploadModal = document.getElementById('closeUploadModal');
-const uploadProfessionalVideo = document.getElementById('uploadProfessionalVideo');
-const uploadYourMatchVideo = document.getElementById('uploadYourMatchVideo');
-const professionalVideoInput = document.getElementById('professionalVideoInput');
-const yourMatchVideoInput = document.getElementById('yourMatchVideoInput');
+const uploadMatchVideo = document.getElementById('uploadMatchVideo');
+const matchVideoInput = document.getElementById('matchVideoInput');
 
-// Store selected video files temporarily
-let selectedProfessionalVideo = null;
-let selectedYourVideo = null;
+// Store selected video file temporarily
+let selectedMatchVideo = null;
 
 if (uploadMatchVideoBtn && uploadVideoModal) {
     // Open modal when clicking Upload Match Video button
@@ -954,52 +951,31 @@ if (uploadMatchVideoBtn && uploadVideoModal) {
         }
     });
     
-    // Handle Professional Video Upload
-    if (uploadProfessionalVideo && professionalVideoInput) {
-        uploadProfessionalVideo.addEventListener('click', () => {
-            professionalVideoInput.click();
+    // Handle Match Video Upload
+    if (uploadMatchVideo && matchVideoInput) {
+        uploadMatchVideo.addEventListener('click', () => {
+            matchVideoInput.click();
         });
         
-        professionalVideoInput.addEventListener('change', (e) => {
+        matchVideoInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
-                console.log('Professional video selected:', file.name);
-                selectedProfessionalVideo = file;
+                console.log('Match video selected:', file.name);
+                selectedMatchVideo = file;
                 
                 // Show upload progress
-                showUploadProgress('professional', file);
+                showUploadProgress(file);
                 
-                // Check if both videos are selected
-                checkAndProcessVideos();
-            }
-        });
-    }
-    
-    // Handle Your Match Video Upload
-    if (uploadYourMatchVideo && yourMatchVideoInput) {
-        uploadYourMatchVideo.addEventListener('click', () => {
-            yourMatchVideoInput.click();
-        });
-        
-        yourMatchVideoInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                console.log('Your match video selected:', file.name);
-                selectedYourVideo = file;
-                
-                // Show upload progress
-                showUploadProgress('your', file);
-                
-                // Check if both videos are selected
-                checkAndProcessVideos();
+                // Process video after upload
+                processVideo();
             }
         });
     }
 }
 
-// Show upload progress for selected videos
-function showUploadProgress(type, file) {
-    const card = type === 'professional' ? uploadProfessionalVideo : uploadYourMatchVideo;
+// Show upload progress for selected video
+function showUploadProgress(file) {
+    const card = uploadMatchVideo;
     const fileName = file.name;
     const fileSize = (file.size / (1024 * 1024)).toFixed(2);
     
@@ -1007,12 +983,11 @@ function showUploadProgress(type, file) {
     card.classList.add('uploaded');
     
     // Update card content to show upload status
-    const cardContent = card.innerHTML;
     card.innerHTML = `
         <div class="upload-option-icon" style="background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);">
             <i class="fas fa-check"></i>
         </div>
-        <h3>${type === 'professional' ? 'Original Video' : 'Analyzed Video'} Uploaded</h3>
+        <h3>Match Video Uploaded</h3>
         <p><strong>${fileName}</strong></p>
         <p style="font-size: 0.85rem; color: #64748B;">${fileSize} MB</p>
         <div class="upload-progress-bar">
@@ -1063,38 +1038,37 @@ function saveVideoToIndexedDB(name, file) {
     });
 }
 
-// Check if both videos are selected and redirect to comparison page
-function checkAndProcessVideos() {
-    if (selectedProfessionalVideo && selectedYourVideo) {
+// Process uploaded video and redirect to comparison page
+function processVideo() {
+    if (selectedMatchVideo) {
         // Wait for upload animations to complete
         setTimeout(async () => {
             // Show loading message
             const loadingMsg = document.createElement('div');
             loadingMsg.id = 'videoLoadingMsg';
             loadingMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 10002; text-align: center;';
-            loadingMsg.innerHTML = '<div style="font-size: 1.5rem; font-weight: 700; color: #7C3AED; margin-bottom: 1rem;">Preparing Videos...</div><div style="color: #64748B;">Saving videos for comparison...</div>';
+            loadingMsg.innerHTML = '<div style="font-size: 1.5rem; font-weight: 700; color: #7C3AED; margin-bottom: 1rem;">Preparing Videos...</div><div style="color: #64748B;">Processing your match video...</div>';
             document.body.appendChild(loadingMsg);
             
             // Close modal
             uploadVideoModal.classList.remove('active');
             
-            console.log('Preparing videos for comparison...');
-            console.log('Original video size:', (selectedProfessionalVideo.size / (1024 * 1024)).toFixed(2), 'MB');
-            console.log('Analyzed video size:', (selectedYourVideo.size / (1024 * 1024)).toFixed(2), 'MB');
+            console.log('Preparing video for comparison...');
+            console.log('Match video size:', (selectedMatchVideo.size / (1024 * 1024)).toFixed(2), 'MB');
             
             try {
                 // Store video file metadata
-                sessionStorage.setItem('professionalVideoName', selectedProfessionalVideo.name);
-                sessionStorage.setItem('yourVideoName', selectedYourVideo.name);
-                sessionStorage.setItem('professionalVideoType', selectedProfessionalVideo.type);
-                sessionStorage.setItem('yourVideoType', selectedYourVideo.type);
+                sessionStorage.setItem('professionalVideoName', selectedMatchVideo.name);
+                sessionStorage.setItem('yourVideoName', 'analyzed_video.mp4');
+                sessionStorage.setItem('professionalVideoType', selectedMatchVideo.type);
+                sessionStorage.setItem('yourVideoType', 'video/mp4');
                 sessionStorage.setItem('videosReady', 'true');
+                sessionStorage.setItem('useLocalAnalyzedVideo', 'true');
                 
-                // Save files to IndexedDB
-                await saveVideoToIndexedDB('professional', selectedProfessionalVideo);
-                await saveVideoToIndexedDB('your', selectedYourVideo);
+                // Save uploaded file to IndexedDB
+                await saveVideoToIndexedDB('professional', selectedMatchVideo);
                 
-                console.log('✓ Both videos saved, redirecting...');
+                console.log('✓ Video saved, redirecting...');
                 
                 // Redirect to comparison page
                 setTimeout(() => {
@@ -1102,8 +1076,8 @@ function checkAndProcessVideos() {
                 }, 500);
                 
             } catch (error) {
-                console.error('Error saving videos:', error);
-                alert('Error preparing videos for analysis. Please try again.');
+                console.error('Error saving video:', error);
+                alert('Error preparing video for analysis. Please try again.');
                 const msg = document.getElementById('videoLoadingMsg');
                 if (msg) document.body.removeChild(msg);
             }
