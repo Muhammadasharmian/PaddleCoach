@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Analysis - PaddleCoach</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .analysis-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .back-button {
+            background: rgba(102, 126, 234, 0.2);
+            color: white;
+            border: 2px solid rgba(102, 126, 234, 0.5);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .back-button:hover {
+            background: rgba(102, 126, 234, 0.4);
+            transform: translateX(-5px);
+        }
+
+        .step-indicator {
+            background: rgba(245, 158, 11, 0.3);
+            border: 2px solid rgba(245, 158, 11, 0.6);
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .section-header {
+            text-align: center;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .analysis-section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            color: white;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+        }
+
+        .section-title.posture {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+        }
+
+        .video-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .video-panel {
+            background: rgba(30, 30, 50, 0.5);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .video-panel.posture {
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .video-panel h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+
+        .video-panel.posture h3 {
+            color: #8b5cf6;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .video-overlay.ai {
+            background: rgba(16, 185, 129, 0.9);
+        }
+
+        .video-overlay.posture {
+            background: rgba(139, 92, 246, 0.9);
+        }
+
+        .video-overlay.posture.ai {
+            background: rgba(16, 185, 129, 0.9);
+        }
+
+        @media (max-width: 768px) {
+            .video-comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="analysis-container">
+        <a href="body-tracking-upload.html" class="back-button">
+            <span>←</span> Back to Step 2
+        </a>
+
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="step-indicator">Step 3</div>
+        </div>
+
+        <div class="section-header">
+            <h2>🏆 Final Analysis: Ball Tracking and Biomechanics</h2>
+            <p style="color: rgba(255, 255, 255, 0.7);">Compare your original gameplay with AI-enhanced analysis</p>
+        </div>
+
+        <!-- Ball Tracking Section -->
+        <div class="analysis-section">
+            <h2 class="section-title">🎯 Step 1: Ball Tracking Analysis</h2>
+            
+            <div class="video-comparison">
+                <div class="video-panel">
+                    <h3>📹 Before AI</h3>
+                    <div class="video-wrapper">
+                        <video id="ballBefore" muted loop>
+                            <source src="/input/demoVideo/dataDetection.mp4" type="video/mp4">
+                        </video>
+                        <div class="video-overlay">ORIGINAL</div>
+                    </div>
+                </div>
+
+                <div class="video-panel">
+                    <h3>✨ After AI</h3>
+                    <div class="video-wrapper">
+                        <video id="ballAfter" muted loop>
+                            <source src="/output/demoVideo/output_dataDetection.mp4" type="video/mp4">
+                        </video>
+                        <div class="video-overlay ai">AI TRACKED</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Posture Tracking Section -->
+        <div class="analysis-section">
+            <h2 class="section-title posture">🧍 Step 2: Posture Analysis</h2>
+            
+            <div class="video-comparison">
+                <div class="video-panel posture">
+                    <h3>📹 Before AI</h3>
+                    <div class="video-wrapper">
+                        <video id="postureBefore" muted loop>
+                            <source src="/input/processVideo/dataDetection.mp4" type="video/mp4">
+                        </video>
+                        <div class="video-overlay posture">ORIGINAL</div>
+                    </div>
+                </div>
+
+                <div class="video-panel posture">
+                    <h3>✨ After AI</h3>
+                    <div class="video-wrapper">
+                        <video id="postureAfter" muted loop>
+                            <source src="/output/processVideo/dataDetection_annotated.mp4" type="video/mp4">
+                        </video>
+                        <div class="video-overlay posture ai">AI POSTURE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get all video elements
+        const ballBefore = document.getElementById('ballBefore');
+        const ballAfter = document.getElementById('ballAfter');
+        const postureBefore = document.getElementById('postureBefore');
+        const postureAfter = document.getElementById('postureAfter');
+
+        // Function to sync videos
+        function syncVideos(master, slave) {
+            master.addEventListener('play', () => {
+                slave.play().catch(e => console.log('Sync play prevented:', e));
+            });
+
+            master.addEventListener('pause', () => {
+                slave.pause();
+            });
+
+            master.addEventListener('seeked', () => {
+                slave.currentTime = master.currentTime;
+            });
+
+            // Sync on time update to handle slight drift
+            master.addEventListener('timeupdate', () => {
+                const timeDiff = Math.abs(master.currentTime - slave.currentTime);
+                if (timeDiff > 0.3) { // Only sync if difference is significant
+                    slave.currentTime = master.currentTime;
+                }
+            });
+        }
+
+        // Sync ball tracking videos (ballBefore is master)
+        syncVideos(ballBefore, ballAfter);
+
+        // Sync posture tracking videos (postureBefore is master)
+        syncVideos(postureBefore, postureAfter);
+
+        // Add play button controls
+        ballBefore.controls = true;
+        ballAfter.controls = true;
+        postureBefore.controls = true;
+        postureAfter.controls = true;
+
+        // Auto-play when videos are loaded
+        let ballBeforeReady = false;
+        let ballAfterReady = false;
+        let postureBeforeReady = false;
+        let postureAfterReady = false;
+
+        function tryAutoPlayBall() {
+            if (ballBeforeReady && ballAfterReady) {
+                ballBefore.currentTime = 0;
+                ballAfter.currentTime = 0;
+                ballBefore.play().catch(e => console.log('Ball autoplay prevented:', e));
+            }
+        }
+
+        function tryAutoPlayPosture() {
+            if (postureBeforeReady && postureAfterReady) {
+                postureBefore.currentTime = 0;
+                postureAfter.currentTime = 0;
+                postureBefore.play().catch(e => console.log('Posture autoplay prevented:', e));
+            }
+        }
+
+        ballBefore.addEventListener('canplay', () => {
+            ballBeforeReady = true;
+            tryAutoPlayBall();
+        }, { once: true });
+
+        ballAfter.addEventListener('canplay', () => {
+            ballAfterReady = true;
+            tryAutoPlayBall();
+        }, { once: true });
+
+        postureBefore.addEventListener('canplay', () => {
+            postureBeforeReady = true;
+            tryAutoPlayPosture();
+        }, { once: true });
+
+        postureAfter.addEventListener('canplay', () => {
+            postureAfterReady = true;
+            tryAutoPlayPosture();
+        }, { once: true });
+
+        // Handle errors
+        [ballBefore, ballAfter, postureBefore, postureAfter].forEach(video => {
+            video.addEventListener('error', (e) => {
+                console.error(`Video error for ${video.id}:`, e);
+                console.error('Error code:', video.error);
+            });
+        });
+    </script>
+</body>
+</html>

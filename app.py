@@ -51,6 +51,11 @@ def body_tracking_upload():
     """Serve the body tracking upload page."""
     return send_file('body-tracking-upload.html')
 
+@app.route('/analysis-final.html')
+def analysis_final():
+    """Serve the final analysis page."""
+    return send_file('analysis-final.html')
+
 @app.route('/styles.css')
 def styles():
     """Serve the CSS file."""
