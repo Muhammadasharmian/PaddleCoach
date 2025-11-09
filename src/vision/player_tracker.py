@@ -148,37 +148,30 @@ class PlayerTracker:
             
             player_id = player_ids[idx]
             
-            # Extract only the 4 essential keypoints (wrists and elbows)
+            # Extract ALL keypoints for full body pose tracking
             keypoints_array = keypoints.data[0]  # Shape: [17, 3]
             keypoint_names = PoseData.get_coco_keypoint_names()
             
-            left_wrist = None
-            left_elbow = None
-            right_wrist = None
-            right_elbow = None
+            # Store all keypoints
+            all_keypoints = {}
             
             for i, name in enumerate(keypoint_names):
                 kp_x, kp_y, kp_conf = keypoints_array[i].tolist()
-                
-                if name == "left_wrist":
-                    left_wrist = Keypoint(x=kp_x, y=kp_y, confidence=kp_conf, name=name)
-                elif name == "left_elbow":
-                    left_elbow = Keypoint(x=kp_x, y=kp_y, confidence=kp_conf, name=name)
-                elif name == "right_wrist":
-                    right_wrist = Keypoint(x=kp_x, y=kp_y, confidence=kp_conf, name=name)
-                elif name == "right_elbow":
-                    right_elbow = Keypoint(x=kp_x, y=kp_y, confidence=kp_conf, name=name)
+                all_keypoints[name] = Keypoint(x=kp_x, y=kp_y, confidence=kp_conf, name=name)
             
-            # Create PoseData object
+            # Create PoseData object with all keypoints
             pose_data = PoseData(
                 frame_number=frame_number,
                 timestamp=timestamp,
                 player_id=player_id,
-                left_wrist=left_wrist,
-                left_elbow=left_elbow,
-                right_wrist=right_wrist,
-                right_elbow=right_elbow
+                left_wrist=all_keypoints.get("left_wrist"),
+                left_elbow=all_keypoints.get("left_elbow"),
+                right_wrist=all_keypoints.get("right_wrist"),
+                right_elbow=all_keypoints.get("right_elbow")
             )
+            
+            # Store all other keypoints for full body visualization
+            pose_data.all_keypoints = all_keypoints
             
             # Compute arm angles
             pose_data.compute_arm_angles()
@@ -194,7 +187,103 @@ class PlayerTracker:
     
     def visualize_pose(self, frame: np.ndarray, pose_data: PoseData) -> np.ndarray:
         """
-        Draw simplified arm skeleton on frame (only wrists and elbows).
+        Draw full body skeleton on frame (all 17 COCO keypoints).
+        
+        Args:
+            frame: Input frame
+            pose_data: PoseData object to visualize
+            
+        Returns:
+            Frame with pose visualization
+        """
+        # Color based on player ID
+        color = (0, 255, 0) if pose_data.player_id == 0 else (255, 0, 0)
+        player_name = f"Player {pose_data.player_id}"
+        
+        # Get all keypoints if available
+        keypoints = getattr(pose_data, 'all_keypoints', {})
+        
+        if not keypoints:
+            # Fallback to basic visualization if all_keypoints not available
+            return self._visualize_arms_only(frame, pose_data)
+        
+        # Define skeleton connections (COCO format)
+        connections = [
+            # Face
+            ("nose", "left_eye"),
+            ("nose", "right_eye"),
+            ("left_eye", "left_ear"),
+            ("right_eye", "right_ear"),
+            # Upper body
+            ("left_shoulder", "right_shoulder"),
+            ("left_shoulder", "left_elbow"),
+            ("left_elbow", "left_wrist"),
+            ("right_shoulder", "right_elbow"),
+            ("right_elbow", "right_wrist"),
+            # Torso
+            ("left_shoulder", "left_hip"),
+            ("right_shoulder", "right_hip"),
+            ("left_hip", "right_hip"),
+            # Lower body
+            ("left_hip", "left_knee"),
+            ("left_knee", "left_ankle"),
+            ("right_hip", "right_knee"),
+            ("right_knee", "right_ankle"),
+        ]
+        
+        # Draw skeleton connections
+        for start_name, end_name in connections:
+            start_kp = keypoints.get(start_name)
+            end_kp = keypoints.get(end_name)
+            
+            if start_kp and end_kp and start_kp.confidence > 0.3 and end_kp.confidence > 0.3:
+                cv2.line(frame,
+                        (int(start_kp.x), int(start_kp.y)),
+                        (int(end_kp.x), int(end_kp.y)),
+                        color, 2)
+        
+        # Draw keypoints
+        for name, kp in keypoints.items():
+            if kp and kp.confidence > 0.3:
+                # Different colors for different body parts
+                if "wrist" in name:
+                    point_color = (0, 255, 255)  # Yellow for wrists
+                    radius = 6
+                elif "elbow" in name or "knee" in name:
+                    point_color = color  # Player color for joints
+                    radius = 5
+                elif "shoulder" in name or "hip" in name:
+                    point_color = (255, 255, 0)  # Cyan for core
+                    radius = 5
+                else:
+                    point_color = (255, 255, 255)  # White for other points
+                    radius = 4
+                
+                cv2.circle(frame, (int(kp.x), int(kp.y)), radius, point_color, -1)
+        
+        # Draw player ID label near head
+        nose_kp = keypoints.get("nose")
+        if nose_kp and nose_kp.confidence > 0.3:
+            label_x = int(nose_kp.x)
+            label_y = int(nose_kp.y) - 20
+        else:
+            # Fallback to shoulder if nose not detected
+            shoulder_kp = keypoints.get("left_shoulder") or keypoints.get("right_shoulder")
+            if shoulder_kp:
+                label_x = int(shoulder_kp.x)
+                label_y = int(shoulder_kp.y) - 30
+            else:
+                return frame
+        
+        cv2.putText(frame, player_name, 
+                   (label_x - 50, label_y),
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+        
+        return frame
+    
+    def _visualize_arms_only(self, frame: np.ndarray, pose_data: PoseData) -> np.ndarray:
+        """
+        Fallback visualization - draw simplified arm skeleton (only wrists and elbows).
         
         Args:
             frame: Input frame

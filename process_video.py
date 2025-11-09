@@ -1,5 +1,30 @@
 """
-Quick test script to process the sample video with YOLOv11n pose estimation.
+Quick test script to process the sample video with YOLOv11n pose estima        print("\n    
+    print("\n" + "="*60)
+    print("📁 OUTPUT FILES:")
+    print("="*60)
+    print(f"  📹 Annotated Video: output_pose/{video_path.replace('.mp4', '_annotated.mp4')}")
+    print(f"     (Full body pose detection visualization)")
+    
+    print("\n" + "="*60)60)
+    print("📁 OUTPUT FILES:")
+    print("="*60)
+    print(f"  📹 Annotated Video: output_pose/{video_path.replace('.mp4', '_annotated.mp4')}")
+    print(f"     (Full body pose detection visualization)")
+    
+    print("\n" + "="*60)
+    print("🚀 NEXT STEPS:")
+    print("="*60)
+    print("  The annotated video shows:")
+    print("    • Real-time full body pose detection on both players")
+    print("    • Complete skeletal keypoint tracking (17 points)")
+    print("    • Body movement visualization")
+    print("\n  Ready for analysis with analyze_processed_video.py!")
+    print("="*60)"*60)
+    print("📁 OUTPUT FILES:")
+    print("="*60)
+    print(f"  📹 Annotated Video: output_pose/output_{video_path}")
+    print(f"     (Pose detection visualization)")
 """
 from pathlib import Path
 import sys
@@ -12,11 +37,11 @@ from vision.video_processor import VideoProcessor
 
 def main():
     # Path to the video
-    video_path = "IMG_7622.mp4"
+    video_path = "dataDetection.mp4"
     
     if not Path(video_path).exists():
         print(f"Error: Video file '{video_path}' not found!")
-        print("Please make sure IMG_7622.mp4 is in the project root directory.")
+        print("Please make sure dataDetection.mp4 is in the project root directory.")
         return
     
     print("="*60)
@@ -25,10 +50,10 @@ def main():
     print("="*60)
     print("\nThis will:")
     print("  ✅ Track both players using YOLOv11n pose")
-    print("  ✅ Detect shot events (not every frame!)")
+    print("  ✅ Full body pose detection (17 keypoints)")
+    print("  ✅ Detect shot events and movements")
     print("  ✅ Extract key shot moments for analysis")
     print("  ✅ Process at ~30 FPS (real-time on M1/M2/M3)")
-    print("  ✅ Generate ULTRA-compact JSON for Gemini API")
     print("\nControls:")
     print("  'p' - Pause/Resume")
     print("  'q' - Quit early")
@@ -38,22 +63,16 @@ def main():
     # Create processor with target FPS (30 for real-time)
     processor = VideoProcessor(
         video_path=video_path,
-        output_dir="output",
+        output_dir="output_pose",
         target_fps=30  # Process at 30 FPS for real-time performance
     )
     
     # Process video (optimized settings)
     stats = processor.process_video(
         visualize=True,      # Show real-time visualization
-        save_video=False,    # Don't save video by default (faster)
+        save_video=True,     # Save annotated video
         max_frames=None      # Process entire video
     )
-    
-    # Save pose data to JSON
-    json_path = processor.save_pose_data_json()
-    
-    # Save optimized shot-based JSON (MUCH smaller!)
-    shots_json_path = processor.save_shots_json()
     
     # Print summary statistics
     summary = processor.get_summary_statistics()
@@ -82,22 +101,17 @@ def main():
     print("\n" + "="*60)
     print("📁 OUTPUT FILES:")
     print("="*60)
-    print(f"  📄 JSON Data: {json_path}")
-    print(f"     (Compact format - only wrists & elbows)")
+    print(f"  � Annotated Video: output/output_{video_path}")
+    print(f"     (Pose detection visualization)")
     
     print("\n" + "="*60)
     print("🚀 NEXT STEPS:")
     print("="*60)
-    print("  The JSON file is ready for Gemini 2.5 Pro API!")
-    print("  It contains:")
-    print("    • Frame-by-frame wrist & elbow positions")
-    print("    • Arm swing angles for technique analysis")
-    print("    • Timestamps for shot timing")
-    print("\n  Mohnish can use this for:")
-    print("    🎯 Shot type classification")
-    print("    🏓 Paddle swing analysis")
-    print("    📈 Technique comparison with pros")
-    print("    💡 Real-time coaching feedback")
+    print("  The annotated video shows:")
+    print("    • Real-time pose detection on both players")
+    print("    • Skeletal keypoint tracking")
+    print("    • Arm swing visualization")
+    print("\n  Ready for analysis with analyze_game.py!")
     print("="*60)
 
 
