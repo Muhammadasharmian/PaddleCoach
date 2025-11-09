@@ -1,134 +1,200 @@
-# PaddleCoach - Table Tennis Analysis System
+# 🏓 PaddleCoach
 
-AI-powered table tennis coaching system with computer vision and pose estimation.
+**AI-Powered Table Tennis Coaching Platform**
 
-**⚡ Optimized for Apple Silicon (M1/M2/M3) - Real-time Performance**
+PaddleCoach is an innovative web application that leverages artificial intelligence to revolutionize table tennis training. From beginners to professionals, our platform provides cutting-edge tools to analyze performance, track progress, and elevate your game.
 
-## Features
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/Muhammadasharmian/PaddleCoach)
 
-- **YOLOv11n Pose Estimation**: Track two players simultaneously
-- **Real-time Processing**: ~30 FPS on Apple Silicon with MPS acceleration
-- **Efficient Tracking**: Only tracks essential keypoints (wrists & elbows)
-- **Compact JSON Output**: Optimized for Gemini 2.5 Pro API
-- **Arm Swing Analysis**: Calculate paddle angles and movement patterns
+---
 
-## Installation
+## 🌟 Features
 
-```bash
-# Install dependencies
-pip install ultralytics opencv-python numpy
+### Core Training Tools
 
-# The system will automatically use Apple MPS (Metal Performance Shaders)
-```
+#### 🎯 **Ball Tracking & Heat Map**
+Track every ball movement with precision. Visualize your shot patterns with heat maps to identify strengths and weaknesses in your game strategy.
 
-## Quick Start
+#### 🏃 **Real-Time Body Tracking**
+AI-powered body tracking captures your movements, posture, and technique. Get instant feedback on your form and positioning during play.
 
-### Process a Video (Real-time)
+#### 🎙️ **AI Voice Coach (VEO)**
+Your personal AI coach guides you through training with voice commands and real-time feedback. Train smarter with intelligent coaching technology.
 
-```bash
-python process_video.py
-```
+#### 💬 **Game History Chatbot**
+Chat with your game database! Ask questions about past matches, get insights, and receive personalized recommendations based on your complete playing history.
 
-This will process `IMG_7622.mp4` at ~30 FPS with real-time visualization.
+#### 🏆 **Professional Player Analysis** *(Pro Feature)*
+Analyze top-ranked players, upload match videos for detailed breakdowns, or simulate hypothetical matches. Learn from the best players in the world.
 
-### Controls During Processing
+#### 🥇 **Multi-Sport Analysis** *(New)*
+Upload videos of any sport and our AI automatically generates body tracking analysis. Perfect for coaches and athletes across multiple disciplines.
 
-- **`p`** - Pause/Resume
-- **`q`** - Quit
-- **`SPACE`** - Toggle visualization (hide for maximum speed)
+---
 
-## Output
+## 🚀 Coming Soon
 
-The system generates a compact JSON file optimized for AI analysis:
+We're expanding our AI-powered coaching technology to bring you the same advanced analytics across multiple sports:
 
-### JSON Structure (Compact)
+- ⚽ **Football**
+- 🎾 **Tennis**
+- ⚾ **Baseball**
+- 🏏 **Cricket**
+- 🏀 **Basketball**
+- 🏐 **Volleyball**
 
-```json
-{
-  "metadata": {
-    "video_file": "IMG_7622.mp4",
-    "video_info": {
-      "resolution": "1920x1080",
-      "original_fps": 60,
-      "processed_fps": 30,
-      "duration_seconds": 81.02
-    },
-    "tracking_info": {
-      "keypoints_tracked": ["left_wrist", "left_elbow", "right_wrist", "right_elbow"]
-    }
-  },
-  "player_0": [
-    {
-      "frame": 0,
-      "time": 0.0,
-      "player": 0,
-      "left_wrist": {"x": 640.5, "y": 480.2, "confidence": 0.95},
-      "left_elbow": {"x": 600.1, "y": 450.3, "confidence": 0.92},
-      "right_wrist": {"x": 720.3, "y": 490.1, "confidence": 0.94},
-      "right_elbow": {"x": 680.2, "y": 460.5, "confidence": 0.91},
-      "angles": {
-        "left_arm": 125.5,
-        "right_arm": 118.2
-      }
-    }
-  ],
-  "player_1": [...]
-}
-```
+---
 
-## Tracked Keypoints
+## 🛠️ Technology Stack
 
-Each player has 4 keypoints tracked:
-- **Left wrist** - Paddle position (dominant hand for lefties)
-- **Left elbow** - Arm swing analysis
-- **Right wrist** - Paddle position (dominant hand for righties)  
-- **Right elbow** - Arm swing analysis
+- **Frontend:** HTML5, CSS3, JavaScript (ES6+)
+- **Icons:** Font Awesome 6.4.0
+- **Authentication:** Local Storage (Backend integration pending)
+- **Design:** Responsive, Mobile-First Design
+- **Animations:** CSS Animations & Transitions
 
-## Performance Optimization
+---
 
-### Apple Silicon (M-series)
-- Uses **MPS** (Metal Performance Shaders) for GPU acceleration
-- **FP16** half-precision for faster inference
-- Processes at **~30 FPS** in real-time
-- Only tracks 4 keypoints (vs 17) for 4x less data
+## 📦 Installation
 
-### Processing Speed
-- **60 FPS video** → downsampled to 30 FPS processing
-- **80-second video** → ~80 seconds processing time (1:1 ratio)
-- **File size**: ~500 KB JSON (vs 30+ MB with all keypoints)
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Muhammadasharmian/PaddleCoach.git
+   cd PaddleCoach
+   ```
 
-## Next Steps: Gemini 2.5 Pro Integration
+2. **Open the project:**
+   - Simply open `index.html` in your web browser
+   - Or use a local server:
+     ```bash
+     # Using Python
+     python -m http.server 8000
+     
+     # Using Node.js (http-server)
+     npx http-server
+     ```
 
-The JSON output is designed to be fed into Gemini 2.5 Pro API for:
-- Shot analysis and classification
-- Technique comparison with professional players
-- Real-time coaching feedback
-- Performance metrics calculation
+3. **Access the application:**
+   - Open `http://localhost:8000` in your browser
 
-## Project Structure
+---
+
+## 📁 Project Structure
 
 ```
 PaddleCoach/
-├── src/
-│   ├── models/
-│   │   └── pose_data.py          # PoseData and Keypoint classes
-│   └── vision/
-│       ├── player_tracker.py     # YOLOv11n player tracking
-│       └── video_processor.py    # Video processing pipeline
-├── output/                        # Generated files
-│   ├── *_pose_data.json          # Pose data for Gemini
-│   └── *_annotated.mp4           # Annotated videos
-├── IMG_7622.mp4                  # Sample video
-└── requirements.txt              # Python dependencies
+├── index.html          # Main HTML file
+├── styles.css          # All styling and responsive design
+├── script.js           # JavaScript functionality and interactions
+├── landing_image.png   # Hero section image
+├── TASK_DIVISION.md    # Task distribution document
+├── ping_pong_uml.md    # UML diagrams
+└── README.md           # Project documentation
 ```
 
-## Team
+---
 
-- **Ashwani**: Vision System & Data Models
-- **Ashar**: Analytics & Database
-- **Mohnish**: AI Coaching (Gemini integration)
-- **Rakshit**: Frontend & UX
+## 🎨 Key Features Implementation
 
-## License
+### Authentication System
+- User signup with email verification
+- Login with persistent sessions (localStorage)
+- User menu with logout functionality
+- Protected feature access (login required)
 
-MIT
+### Dynamic Content
+- Sections reorder based on login state
+- Hero section visibility control
+- Personalized user experience
+
+### File Upload
+- Video upload for match analysis
+- Support for multiple video formats
+- File size and type validation
+
+### Responsive Design
+- Mobile-first approach
+- Tablet and desktop optimizations
+- Smooth animations and transitions
+
+---
+
+## 🔐 Authentication Flow
+
+1. **Sign Up:** Users create an account with name, email, and password
+2. **Verification:** Email verification step (UI implemented)
+3. **Login:** Secure login with credential validation
+4. **Session:** Persistent login state using localStorage
+5. **Protected Features:** All feature buttons require authentication
+
+---
+
+## 🎯 Usage
+
+### For Players:
+1. **Sign Up/Login** to access all features
+2. **Upload Match Videos** for AI analysis
+3. **Track Your Progress** with ball and body tracking
+4. **Chat with AI Coach** for personalized feedback
+5. **Compare with Pros** to improve your technique
+
+### For Coaches:
+1. **Multi-Sport Analysis** for diverse training programs
+2. **Professional Analysis Tools** for detailed breakdowns
+3. **Historical Data Access** to track athlete progress
+
+---
+
+## 🚧 Roadmap
+
+- [ ] Backend API integration
+- [ ] Real video processing and analysis
+- [ ] AI model integration for ball/body tracking
+- [ ] WebRTC for live coaching sessions
+- [ ] Payment gateway for Pro features
+- [ ] Mobile app (iOS/Android)
+- [ ] Multi-language support
+- [ ] Social features (share, compete)
+
+---
+
+## 👥 Contributors
+
+- **Ashwani Mishra** - [@Ashwani564](https://github.com/Ashwani564)
+- **Mohnish Sao** - [@mohnish-dev](https://github.com/mohnish-dev)
+- **Muhammad Ashar Mian** - [@Muhammadasharmian](https://github.com/Muhammadasharmian)
+- **Rakshit Jaiswal** - [@Raksj12](https://github.com/Raksj12)
+
+---
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/Muhammadasharmian/PaddleCoach/issues).
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📞 Contact
+
+**Project Link:** [https://github.com/Muhammadasharmian/PaddleCoach](https://github.com/Muhammadasharmian/PaddleCoach)
+
+---
+
+## 🙏 Acknowledgments
+
+- Font Awesome for icons
+- AI/ML community for inspiration
+- Table tennis community for valuable feedback
+
+---
+
+<div align="center">
+  <strong>Built with ❤️ for the table tennis community</strong>
+  <br>
+  <sub>© 2025 PaddleCoach. All rights reserved.</sub>
+</div>

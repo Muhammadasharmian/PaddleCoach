@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaddleCoach - AI-Powered Table Tennis Coaching</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Scrolling Banner -->
+    <div class="promo-banner">
+        <div class="promo-banner-content">
+            <span class="promo-item">New Users Get Pro Features Free</span>
+            <span class="promo-dot">•</span>
+            <span class="promo-item">Start Training with AI Coaching Today</span>
+            <span class="promo-dot">•</span>
+            <span class="promo-item">Track Every Shot in Real-Time</span>
+            <span class="promo-dot">•</span>
+            <span class="promo-item">New Users Get Pro Features Free</span>
+            <span class="promo-dot">•</span>
+            <span class="promo-item">Start Training with AI Coaching Today</span>
+            <span class="promo-dot">•</span>
+            <span class="promo-item">Track Every Shot in Real-Time</span>
+            <span class="promo-dot">•</span>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <i class="fas fa-table-tennis"></i>
+                    <span>PaddleCoach</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#core-features">Features</a></li>
+                    <li><a href="#how-it-works">How it Works</a></li>
+                    <li><a href="#technology">Technology</a></li>
+                    <li><a href="#features">Why PaddleCoach</a></li>
+                </ul>
+                <div class="nav-buttons">
+                    <button class="btn-signup">Sign Up</button>
+                    <button class="btn-login">Log In</button>
+                </div>
+                <div class="user-menu" style="display: none;">
+                    <button class="btn-user-menu">
+                        <i class="fas fa-user-circle"></i>
+                        <span class="user-name">Account</span>
+                    </button>
+                    <div class="user-dropdown">
+                        <button class="btn-logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Log Out
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-image-wrapper">
+                <img src="landing_image.png" alt="PaddleCoach - AI-Powered Table Tennis Coaching" class="hero-main-image">
+            </div>
+        </div>
+    </section>
+
+    <!-- Steps Section -->
+    <section class="steps">
+        <div class="container">
+            <h2 class="section-title">Get started in 3 easy steps</h2>
+            <div class="steps-grid">
+                <!-- Step 1 -->
+                <div class="step-card">
+                    <div class="step-badge">Step 1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <h3 class="step-title">Record Your Game</h3>
+                    <p class="step-description">
+                        Set up your camera and start playing. Our AI tracks every shot, movement, 
+                        and position in real-time using advanced computer vision.
+                    </p>
+                    <div class="step-visual">
+                        <div class="visual-box">
+                            <i class="fas fa-camera fa-3x"></i>
+                            <div class="tracking-indicator"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-card">
+                    <div class="step-badge">Step 2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="step-title">Analyze Your Performance</h3>
+                    <p class="step-description">
+                        Track your shots in real-time with detailed analytics. See speed, placement, 
+                        trajectory, and compare with professional techniques.
+                    </p>
+                    <div class="step-visual">
+                        <div class="visual-box analytics">
+                            <div class="stat-bar"></div>
+                            <div class="stat-bar"></div>
+                            <div class="stat-bar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-card">
+                    <div class="step-badge">Step 3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3 class="step-title">Improve Your Skills</h3>
+                    <p class="step-description">
+                        Get personalized coaching advice, watch AI-generated technique demonstrations, 
+                        and track your improvement over time.
+                    </p>
+                    <div class="step-visual">
+                        <div class="visual-box success">
+                            <i class="fas fa-medal fa-3x"></i>
+                            <div class="progress-ring"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cta-buttons">
+                <button class="btn-large btn-primary" id="startTrainingBtn">Start Training</button>
+                <button class="btn-large btn-secondary" id="watchDemoBtn">Watch Demo</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Coming Soon Section -->
+    <section class="coming-soon">
+        <div class="container">
+            <div class="coming-soon-content">
+                <h2 class="coming-soon-title">More Sports Coming Soon</h2>
+                <p class="coming-soon-subtitle">
+                    Our AI-powered coaching technology is expanding to bring you the same advanced analytics 
+                    and personalized training across multiple sports.
+                </p>
+                <div class="sports-grid">
+                    <div class="sport-item">
+                        <i class="fas fa-football-ball"></i>
+                        <span>Football</span>
+                    </div>
+                    <div class="sport-item">
+                        <i class="fas fa-table-tennis-paddle-ball"></i>
+                        <span>Tennis</span>
+                    </div>
+                    <div class="sport-item">
+                        <i class="fas fa-baseball-ball"></i>
+                        <span>Baseball</span>
+                    </div>
+                    <div class="sport-item">
+                        <i class="fas fa-baseball-bat-ball"></i>
+                        <span>Cricket</span>
+                    </div>
+                    <div class="sport-item">
+                        <i class="fas fa-basketball-ball"></i>
+                        <span>Basketball</span>
+                    </div>
+                    <div class="sport-item">
+                        <i class="fas fa-volleyball-ball"></i>
+                        <span>Volleyball</span>
+                    </div>
+                </div>
+                <p class="coming-soon-cta">
+                    <i class="fas fa-bell"></i>
+                    Be the first to know when we launch new sports!
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Features Section -->
+    <section id="core-features" class="core-features">
+        <div class="container">
+            <h2 class="section-title">Powerful Features for Every Player</h2>
+            <p class="section-subtitle">
+                From beginners to pros, PaddleCoach provides cutting-edge tools to elevate your game
+            </p>
+            
+            <div class="features-showcase">
+                <!-- Ball Tracking & Heat Map -->
+                <div class="showcase-card">
+                    <div class="showcase-icon">
+                        <i class="fas fa-basketball-ball"></i>
+                    </div>
+                    <h3 class="showcase-title">Ball Tracking & Heat Map</h3>
+                    <p class="showcase-description">
+                        Track every ball movement with precision. Visualize your shot patterns with heat maps 
+                        to identify strengths and weaknesses in your game strategy.
+                    </p>
+                    <button class="btn-showcase">
+                        <i class="fas fa-play-circle"></i>
+                        View Live Demo
+                    </button>
+                </div>
+
+                <!-- Body Tracking -->
+                <div class="showcase-card">
+                    <div class="showcase-icon">
+                        <i class="fas fa-running"></i>
+                    </div>
+                    <h3 class="showcase-title">Real-Time Body Tracking</h3>
+                    <p class="showcase-description">
+                        AI-powered body tracking captures your movements, posture, and technique. 
+                        Get instant feedback on your form and positioning during play.
+                    </p>
+                    <button class="btn-showcase">
+                        <i class="fas fa-video"></i>
+                        Try Body Tracking
+                    </button>
+                </div>
+
+                <!-- AI Coach -->
+                <div class="showcase-card">
+                    <div class="showcase-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h3 class="showcase-title">AI Voice Coach (VEO)</h3>
+                    <p class="showcase-description">
+                        Your personal AI coach guides you through training with voice commands and real-time 
+                        feedback. Train smarter with intelligent coaching technology.
+                    </p>
+                    <button class="btn-showcase">
+                        <i class="fas fa-microphone"></i>
+                        Talk to Coach
+                    </button>
+                </div>
+
+                <!-- Game History Chatbot -->
+                <div class="showcase-card">
+                    <div class="showcase-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3 class="showcase-title">Game History Chatbot</h3>
+                    <p class="showcase-description">
+                        Chat with your game database! Ask questions about past matches, get insights, 
+                        and receive personalized recommendations based on your complete playing history.
+                    </p>
+                    <button class="btn-showcase">
+                        <i class="fas fa-database"></i>
+                        Access History
+                    </button>
+                </div>
+
+                <!-- Pro Player Analysis -->
+                <div class="showcase-card highlight-card">
+                    <div class="showcase-badge">Pro Feature</div>
+                    <div class="showcase-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3 class="showcase-title">Professional Player Analysis</h3>
+                    <p class="showcase-description">
+                        Analyze top-ranked players, upload match videos for detailed breakdowns, or simulate 
+                        hypothetical matches. Learn from the best players in the world.
+                    </p>
+                    <div class="pro-options">
+                        <button class="btn-showcase pro-btn" id="uploadMatchVideoBtn">
+                            <i class="fas fa-upload"></i>
+                            Upload Match Video
+                        </button>
+                        <input type="file" id="matchVideoInput" accept="video/*" style="display: none;">
+                        <button class="btn-showcase pro-btn">
+                            <i class="fas fa-chess"></i>
+                            Simulate Match
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Multi-Sport Support -->
+                <div class="showcase-card highlight-card">
+                    <div class="showcase-badge">New</div>
+                    <div class="showcase-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <h3 class="showcase-title">Multi-Sport Analysis</h3>
+                    <p class="showcase-description">
+                        Upload videos of any sport and our AI automatically generates body tracking analysis. 
+                        Perfect for coaches and athletes across multiple disciplines.
+                    </p>
+                    <button class="btn-showcase">
+                        <i class="fas fa-file-upload"></i>
+                        Upload New Sport Video
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">
+                Why <span class="highlight">PaddleCoach</span> is Different
+            </h2>
+            <p class="section-subtitle">
+                Experience the future of table tennis training with AI-powered coaching technology. 
+                Our innovative system delivers intelligent, accurate, and transformative insights 
+                to help you reach your full potential.
+            </p>
+            <p class="section-cta">It's time to step up and make your training count.</p>
+
+            <div class="features-grid">
+                <div class="feature-card feature-primary">
+                    <div class="feature-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="feature-label">Real-Time Analysis</h3>
+                    <p class="feature-quote">
+                        "The AI tracking is incredible. I can see every shot's speed and placement 
+                        instantly. PaddleCoach has completely changed how I train."
+                    </p>
+                    <div class="feature-author">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Alex Chen</span>
+                        <span class="feature-date">11/05/2025</span>
+                    </div>
+                </div>
+
+                <div class="feature-card feature-dark">
+                    <h3 class="feature-highlight">Professional</h3>
+                    <h2 class="feature-big-text">Insights</h2>
+                    <p class="feature-subtext">Delivered</p>
+                    <button class="btn-primary" id="startNowBtn">Start Now</button>
+                </div>
+
+                <div class="feature-card feature-primary">
+                    <div class="feature-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="feature-label">Pro Comparison</h3>
+                    <p class="feature-quote">
+                        "Comparing my form to professional players helped me identify exactly 
+                        what I needed to improve. The pose analysis is spot-on."
+                    </p>
+                    <div class="feature-author">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Sarah Martinez</span>
+                        <span class="feature-date">11/02/2025</span>
+                    </div>
+                </div>
+
+                <div class="feature-card feature-dark">
+                    <h3 class="feature-highlight-large">Train Smart.</h3>
+                    <h2 class="feature-big-text">Up to</h2>
+                    <h1 class="feature-huge-text">10x</h1>
+                    <p class="feature-subtext">Faster Improvement</p>
+                    <button class="btn-primary" id="trainNowBtn">Train Now</button>
+                </div>
+
+                <div class="feature-card feature-primary">
+                    <div class="feature-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="feature-label">AI Coach</h3>
+                    <p class="feature-quote">
+                        "It's like having a professional coach watching every match. The real-time 
+                        feedback during games is invaluable."
+                    </p>
+                    <div class="feature-author">
+                        <i class="fas fa-user-circle"></i>
+                        <span>James Park</span>
+                        <span class="feature-date">11/07/2025</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology Section -->
+    <section id="technology" class="technology">
+        <div class="container">
+            <h2 class="section-title">Powered by cutting-edge AI</h2>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>Computer Vision</h3>
+                    <p>YOLO and Faster R-CNN track ball and player movements with millisecond precision</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <h3>Pose Analysis</h3>
+                    <p>MediaPipe extracts body poses to compare your form with professional techniques</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Gemini AI</h3>
+                    <p>RAG-powered coaching system provides real-time, context-aware advice</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <i class="fas fa-film"></i>
+                    </div>
+                    <h3>Video Generation</h3>
+                    <p>Veo 3.1 creates custom training demonstrations showing perfect technique</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Performance Tracking</h3>
+                    <p>MySQL databases store all game data for comprehensive long-term analysis</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <i class="fas fa-gauge-high"></i>
+                    </div>
+                    <h3>Real-Time Analytics</h3>
+                    <p>Instant feedback on shot speed, placement, trajectory, and technique</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modules Section -->
+    <section id="how-it-works" class="modules">
+        <div class="container">
+            <h2 class="section-title">Three powerful AI coaching modules</h2>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-header">
+                        <i class="fas fa-user-tie"></i>
+                        <h3>Pro Comparison</h3>
+                    </div>
+                    <div class="module-content">
+                        <p>
+                            Analyze your recorded matches by comparing body poses, angles, and positioning 
+                            against professional players. Get detailed feedback on what to improve.
+                        </p>
+                        <ul class="module-features">
+                            <li><i class="fas fa-check"></i> Body pose extraction with MediaPipe</li>
+                            <li><i class="fas fa-check"></i> Side-by-side comparison with pros</li>
+                            <li><i class="fas fa-check"></i> Detailed angle and form analysis</li>
+                            <li><i class="fas fa-check"></i> Personalized improvement tips</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="module-card">
+                    <div class="module-header">
+                        <i class="fas fa-play-circle"></i>
+                        <h3>Visual Demonstrator</h3>
+                    </div>
+                    <div class="module-content">
+                        <p>
+                            Watch AI-generated training videos that demonstrate perfect technique. 
+                            See exactly how your shots should look with annotated visual guides.
+                        </p>
+                        <ul class="module-features">
+                            <li><i class="fas fa-check"></i> Custom video generation with Veo 3.1</li>
+                            <li><i class="fas fa-check"></i> Annotated technique breakdowns</li>
+                            <li><i class="fas fa-check"></i> Reference images with Nano Banana</li>
+                            <li><i class="fas fa-check"></i> Step-by-step movement guides</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="module-card">
+                    <div class="module-header">
+                        <i class="fas fa-comments"></i>
+                        <h3>Live Coach</h3>
+                    </div>
+                    <div class="module-content">
+                        <p>
+                            Receive real-time coaching during matches. AI analyzes your performance 
+                            and provides immediate, actionable advice drawn from professional knowledge.
+                        </p>
+                        <ul class="module-features">
+                            <li><i class="fas fa-check"></i> Real-time performance feedback</li>
+                            <li><i class="fas fa-check"></i> RAG system with Gemini AI</li>
+                            <li><i class="fas fa-check"></i> Professional tips database</li>
+                            <li><i class="fas fa-check"></i> Context-aware coaching advice</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Banner -->
+    <section class="cta-banner" id="ctaBanner">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Transform any table into a smart training facility</h2>
+                <p>Professional-level coaching available to everyone, everywhere</p>
+                <button class="btn-large btn-primary" id="getStartedNowBtn">Get Started Now</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <i class="fas fa-table-tennis"></i>
+                        <span>PaddleCoach</span>
+                    </div>
+                    <p>AI-Powered Table Tennis Coaching</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <ul>
+                            <li><a href="#core-features">Features</a></li>
+                            <li><a href="#technology">Technology</a></li>
+                            <li><a href="#how-it-works">How it Works</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="https://github.com/Muhammadasharmian/PaddleCoach" target="_blank" rel="noopener noreferrer">About Us</a></li>
+                            <li><a href="https://github.com/Muhammadasharmian/PaddleCoach" target="_blank" rel="noopener noreferrer">Contact</a></li>
+                            <li><a href="https://github.com/Muhammadasharmian/PaddleCoach" target="_blank" rel="noopener noreferrer">Support</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Connect</h4>
+                        <div class="social-links">
+                            <a href="https://github.com/Muhammadasharmian/PaddleCoach" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 PaddleCoach. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Sign Up Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="signupModal">&times;</span>
+            <div class="modal-header">
+                <i class="fas fa-table-tennis"></i>
+                <h2>Create Your Account</h2>
+                <p>Start your AI-powered training journey</p>
+            </div>
+            
+            <form class="auth-form" id="signupForm">
+                <div class="social-auth">
+                    <button type="button" class="social-btn google-btn">
+                        <i class="fab fa-google"></i>
+                        Continue with Google
+                    </button>
+                    <button type="button" class="social-btn facebook-btn">
+                        <i class="fab fa-facebook-f"></i>
+                        Continue with Facebook
+                    </button>
+                </div>
+                
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" placeholder="Enter your name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signupEmail">Email Address</label>
+                    <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="signupPassword" placeholder="Create a password" required>
+                        <button type="button" class="toggle-password" data-target="signupPassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="password-requirements">
+                        <p class="req-title">Password must contain:</p>
+                        <ul>
+                            <li id="req-length"><i class="fas fa-circle"></i> At least 8 characters</li>
+                            <li id="req-uppercase"><i class="fas fa-circle"></i> One uppercase letter</li>
+                            <li id="req-lowercase"><i class="fas fa-circle"></i> One lowercase letter</li>
+                            <li id="req-number"><i class="fas fa-circle"></i> One number</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signupConfirmPassword">Confirm Password</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="signupConfirmPassword" placeholder="Confirm your password" required>
+                        <button type="button" class="toggle-password" data-target="signupConfirmPassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-submit">Sign Up</button>
+                
+                <p class="switch-auth">
+                    Already have an account? 
+                    <a href="#" class="switch-link" data-switch="loginModal">Log In</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Email Verification Modal -->
+    <div id="verificationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="verificationModal">&times;</span>
+            <div class="modal-header">
+                <i class="fas fa-envelope-circle-check"></i>
+                <h2>Verify Your Email</h2>
+                <p>We've sent a verification code to</p>
+                <p class="verification-email"></p>
+            </div>
+            
+            <form class="auth-form" id="verificationForm">
+                <div class="form-group">
+                    <label for="verificationCode">Enter Verification Code</label>
+                    <div class="verification-code-input">
+                        <input type="text" maxlength="1" class="code-digit" data-index="0" pattern="[0-9]" required>
+                        <input type="text" maxlength="1" class="code-digit" data-index="1" pattern="[0-9]" required>
+                        <input type="text" maxlength="1" class="code-digit" data-index="2" pattern="[0-9]" required>
+                        <input type="text" maxlength="1" class="code-digit" data-index="3" pattern="[0-9]" required>
+                        <input type="text" maxlength="1" class="code-digit" data-index="4" pattern="[0-9]" required>
+                        <input type="text" maxlength="1" class="code-digit" data-index="5" pattern="[0-9]" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-submit">Verify Email</button>
+                
+                <div class="resend-code">
+                    <p>Didn't receive the code?</p>
+                    <button type="button" class="btn-resend" id="resendCode">Resend Code</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="loginModal">&times;</span>
+            <div class="modal-header">
+                <i class="fas fa-table-tennis"></i>
+                <h2>Welcome Back</h2>
+                <p>Log in to continue your training</p>
+            </div>
+            
+            <form class="auth-form" id="loginForm">
+                <div class="social-auth">
+                    <button type="button" class="social-btn google-btn">
+                        <i class="fab fa-google"></i>
+                        Continue with Google
+                    </button>
+                    <button type="button" class="social-btn facebook-btn">
+                        <i class="fab fa-facebook-f"></i>
+                        Continue with Facebook
+                    </button>
+                </div>
+                
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                        <button type="button" class="toggle-password" data-target="loginPassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rememberMe">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="btn-submit">Log In</button>
+                
+                <p class="switch-auth">
+                    Don't have an account? 
+                    <a href="#" class="switch-link" data-switch="signupModal">Sign Up</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
