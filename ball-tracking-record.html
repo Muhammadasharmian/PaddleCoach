@@ -125,15 +125,28 @@
             <p>Camera is now tracking ball movements in real-time</p>
         </div>
 
+        <!-- Camera Feed -->
+        <div class="camera-feed" style="background: rgba(30, 30, 50, 0.5); border-radius: 15px; padding: 1.5rem; border: 2px solid rgba(102, 126, 234, 0.3); margin: 2rem 0;">
+            <h3 style="color: #667eea; margin-bottom: 1rem; text-align: center;">📹 Live Camera Feed with AI Tracking</h3>
+            <div style="position: relative; width: 100%; max-width: 800px; margin: 0 auto; background: #000; border-radius: 10px; overflow: hidden;">
+                <video id="cameraVideo" autoplay playsinline muted style="width: 100%; height: auto; display: block;"></video>
+                <canvas id="trackingCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></canvas>
+                <div id="statusOverlay" style="position: absolute; top: 10px; left: 10px; background: rgba(0, 0, 0, 0.7); padding: 10px; border-radius: 8px; color: white; font-size: 14px;">
+                    <div>Status: <span id="trackingStatus">Initializing...</span></div>
+                    <div>Detections: <span id="detectionCount">0</span></div>
+                    <div>FPS: <span id="fpsDisplay">0</span></div>
+                </div>
+            </div>
+        </div>
+
         <div class="instructions">
             <h3>📋 Instructions</h3>
             <ul>
-                <li>The camera feed will open automatically</li>
+                <li>Allow camera access when prompted</li>
                 <li>Position your camera to capture the table tennis table</li>
                 <li>Start playing - the AI will track ball movements in real-time</li>
-                <li>Ball trajectory will be displayed with visual overlays</li>
-                <li>Heat maps are generated automatically</li>
-                <li>Press <strong>'q'</strong> on your keyboard to stop recording and save</li>
+                <li>Ball trajectory will be displayed with visual overlays in the browser</li>
+                <li>Click the stop button below when finished to save the session</li>
             </ul>
         </div>
 
@@ -151,54 +164,209 @@
     </div>
 
     <script>
-        // Start the Python ball tracking script
-        window.addEventListener('DOMContentLoaded', () => {
-            // Send message to start Python script
-            fetch('/api/start-ball-tracking', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
+        const cameraVideo = document.getElementById('cameraVideo');
+        const trackingCanvas = document.getElementById('trackingCanvas');
+        const ctx = trackingCanvas.getContext('2d');
+        const trackingStatus = document.getElementById('trackingStatus');
+        const detectionCount = document.getElementById('detectionCount');
+        const fpsDisplay = document.getElementById('fpsDisplay');
+        
+        let stream = null;
+        let isTracking = false;
+        let detections = 0;
+        let lastFrameTime = Date.now();
+        let fps = 0;
+        let ballTrajectory = [];
+        const maxTrajectoryLength = 30;
+
+        // Start camera feed
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
+                cameraVideo.srcObject = stream;
+                
+                // Set canvas size to match video
+                cameraVideo.addEventListener('loadedmetadata', () => {
+                    trackingCanvas.width = cameraVideo.videoWidth;
+                    trackingCanvas.height = cameraVideo.videoHeight;
+                    trackingStatus.textContent = 'Camera Active';
+                    startTracking();
+                });
+
+                console.log('Camera started successfully');
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                trackingStatus.textContent = 'Camera Error';
+                alert('Error accessing camera. Please make sure you have granted camera permissions.');
+            }
+        }
+
+        // Simple ball detection using color (orange/white ball detection)
+        function detectBall() {
+            if (!cameraVideo.videoWidth) return null;
+
+            // Create temporary canvas for processing
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = cameraVideo.videoWidth;
+            tempCanvas.height = cameraVideo.videoHeight;
+            
+            // Draw current frame
+            tempCtx.drawImage(cameraVideo, 0, 0);
+            
+            // Get image data
+            const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+            const data = imageData.data;
+            
+            // Detect ball by color (orange or white - common ping pong ball colors)
+            let ballCandidates = [];
+            const step = 10; // Sample every 10 pixels for performance
+            
+            for (let y = 0; y < tempCanvas.height; y += step) {
+                for (let x = 0; x < tempCanvas.width; x += step) {
+                    const i = (y * tempCanvas.width + x) * 4;
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+                    
+                    // Detect orange ball (high red, medium green, low blue)
+                    const isOrange = r > 200 && g > 100 && g < 200 && b < 100;
+                    // Detect white ball (all channels high)
+                    const isWhite = r > 200 && g > 200 && b > 200;
+                    
+                    if (isOrange || isWhite) {
+                        ballCandidates.push({ x, y, brightness: r + g + b });
+                    }
                 }
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Ball tracking started:', data);
-            })
-            .catch(err => {
-                console.error('Error starting ball tracking:', err);
-                alert('Error starting ball tracking. Please make sure the camera is connected.');
-            });
+            }
+            
+            if (ballCandidates.length > 0) {
+                // Find the brightest/most likely ball position
+                ballCandidates.sort((a, b) => b.brightness - a.brightness);
+                return ballCandidates[0];
+            }
+            
+            return null;
+        }
+
+        // Start ball tracking loop
+        function startTracking() {
+            isTracking = true;
+            trackingStatus.textContent = '🎾 Tracking Active';
+            
+            function trackFrame() {
+                if (!isTracking) return;
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, trackingCanvas.width, trackingCanvas.height);
+                
+                // Detect ball
+                const ball = detectBall();
+                
+                if (ball) {
+                    detections++;
+                    detectionCount.textContent = detections;
+                    
+                    // Add to trajectory
+                    ballTrajectory.push({ x: ball.x, y: ball.y });
+                    if (ballTrajectory.length > maxTrajectoryLength) {
+                        ballTrajectory.shift();
+                    }
+                    
+                    // Draw ball circle
+                    ctx.beginPath();
+                    ctx.arc(ball.x, ball.y, 20, 0, 2 * Math.PI);
+                    ctx.strokeStyle = '#00ff00';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                    
+                    // Draw crosshair
+                    ctx.strokeStyle = '#00ff00';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(ball.x - 25, ball.y);
+                    ctx.lineTo(ball.x + 25, ball.y);
+                    ctx.moveTo(ball.x, ball.y - 25);
+                    ctx.lineTo(ball.x, ball.y + 25);
+                    ctx.stroke();
+                    
+                    // Draw label
+                    ctx.fillStyle = '#00ff00';
+                    ctx.font = 'bold 16px Arial';
+                    ctx.fillText('BALL', ball.x + 25, ball.y - 10);
+                }
+                
+                // Draw trajectory
+                if (ballTrajectory.length > 1) {
+                    ctx.strokeStyle = 'rgba(255, 165, 0, 0.7)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(ballTrajectory[0].x, ballTrajectory[0].y);
+                    for (let i = 1; i < ballTrajectory.length; i++) {
+                        ctx.lineTo(ballTrajectory[i].x, ballTrajectory[i].y);
+                    }
+                    ctx.stroke();
+                    
+                    // Draw trajectory points
+                    ballTrajectory.forEach((point, index) => {
+                        const alpha = (index + 1) / ballTrajectory.length;
+                        ctx.fillStyle = `rgba(255, 165, 0, ${alpha})`;
+                        ctx.beginPath();
+                        ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
+                        ctx.fill();
+                    });
+                }
+                
+                // Calculate FPS
+                const now = Date.now();
+                fps = Math.round(1000 / (now - lastFrameTime));
+                lastFrameTime = now;
+                fpsDisplay.textContent = fps;
+                
+                // Continue tracking
+                requestAnimationFrame(trackFrame);
+            }
+            
+            trackFrame();
+        }
+
+        // Start camera when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            startCamera();
         });
 
         // Handle stop button
-        document.getElementById('stopRecording').addEventListener('click', () => {
+        document.getElementById('stopRecording').addEventListener('click', async () => {
             const button = document.getElementById('stopRecording');
             button.disabled = true;
             button.textContent = 'Stopping...';
             
-            fetch('/api/stop-ball-tracking', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Ball tracking stopped:', data);
-                button.textContent = 'Stopped! Redirecting...';
-                // Redirect back to ball tracking page
-                setTimeout(() => {
-                    window.location.href = 'ball_tracking.html';
-                }, 1000);
-            })
-            .catch(err => {
-                console.error('Error stopping ball tracking:', err);
-                // Still redirect even if there was an error
-                button.textContent = 'Redirecting...';
-                setTimeout(() => {
-                    window.location.href = 'ball_tracking.html';
-                }, 1000);
-            });
+            // Stop tracking
+            isTracking = false;
+            trackingStatus.textContent = 'Stopped';
+            
+            // Stop camera stream
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            
+            button.textContent = 'Stopped! Redirecting...';
+            setTimeout(() => {
+                window.location.href = 'ball_tracking.html';
+            }, 1000);
+        });
+
+        // Stop camera when leaving page
+        window.addEventListener('beforeunload', () => {
+            isTracking = false;
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
         });
     </script>
 </body>
