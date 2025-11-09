@@ -57,7 +57,7 @@ body {
 .promo-dot {
     display: inline-block;
     padding: 0 1rem;
-    font-size: 1rem;
+    font-size: 1.2rem;
 }
 
 @keyframes scroll-left {
@@ -300,12 +300,14 @@ button {
 /* Hero Section */
 /* ==================== */
 .hero {
-    padding: 2rem 0;
+    padding: 4rem 0;
+    margin: 3rem 0;
     background: white;
     display: flex;
     align-items: center;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
+    z-index: 1;
 }
 
 .hero::before {
@@ -531,6 +533,8 @@ button {
 .steps {
     padding: 5rem 0;
     background: white;
+    position: relative;
+    z-index: 10;
 }
 
 .section-title {
