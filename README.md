@@ -4,7 +4,6 @@
 
 PaddleCoach is an innovative web application that leverages artificial intelligence to revolutionize table tennis training. From beginners to professionals, our platform provides cutting-edge tools to analyze performance, track progress, and elevate your game.
 
-[![Live Demo](https://img.shields.io/badge/Demo-Live-brightgreen)](https://muhammadasharmian.github.io/PaddleCoach/)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/Muhammadasharmian/PaddleCoach)
 
 ---
@@ -168,12 +167,6 @@ PaddleCoach/
 
 ---
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/Muhammadasharmian/PaddleCoach/issues).
@@ -189,8 +182,6 @@ Contributions, issues, and feature requests are welcome! Feel free to check the 
 ## 📞 Contact
 
 **Project Link:** [https://github.com/Muhammadasharmian/PaddleCoach](https://github.com/Muhammadasharmian/PaddleCoach)
-
-**Live Demo:** [https://muhammadasharmian.github.io/PaddleCoach/](https://muhammadasharmian.github.io/PaddleCoach/)
 
 ---
 
