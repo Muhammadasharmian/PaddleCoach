@@ -218,6 +218,14 @@ const createMobileMenu = () => {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('PaddleCoach website loaded successfully!');
     createMobileMenu();
+    
+    // Ball Tracking button handler
+    const ballTrackingBtn = document.getElementById('startBallTracking');
+    if (ballTrackingBtn) {
+        ballTrackingBtn.addEventListener('click', () => {
+            window.location.href = 'ball_tracking.html';
+        });
+    }
 });
 
 // Add loading animation
@@ -922,7 +930,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.stopPropagation();
                 promptLogin();
             } else {
-                // User is logged in, show feature coming soon message
+                // User is logged in
+                // Check if this is the ball tracking button - it has its own handler
+                if (button.id === 'startBallTracking') {
+                    // Let the dedicated ball tracking handler take over
+                    return;
+                }
+                // For other buttons, show feature coming soon message
                 const buttonText = button.textContent.trim();
                 alert(`${buttonText} feature will be available soon!\n\nThis feature is currently in development and will be implemented when the backend is ready.`);
             }

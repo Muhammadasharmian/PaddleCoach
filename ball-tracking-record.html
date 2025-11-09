@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Ball Tracking - PaddleCoach</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .recording-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .recording-status {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 2rem 0;
+        }
+
+        .recording-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .recording-status h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .recording-status p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .instructions {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .instructions h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .instructions li {
+            padding: 0.5rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .instructions li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .stop-button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .stop-button:hover {
+            transform: scale(1.05);
+        }
+
+        .back-button {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            background: rgba(102, 126, 234, 0.2);
+            color: white;
+            border: 2px solid rgba(102, 126, 234, 0.5);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-button:hover {
+            background: rgba(102, 126, 234, 0.4);
+            transform: translateX(-5px);
+        }
+    </style>
+</head>
+<body>
+    <a href="ball_tracking.html" class="back-button">
+        <span>←</span> Back
+    </a>
+
+    <div class="recording-container">
+        <div class="recording-status">
+            <div class="recording-icon">🎥</div>
+            <h2>Real-Time Ball Tracking Active</h2>
+            <p>Camera is now tracking ball movements in real-time</p>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 Instructions</h3>
+            <ul>
+                <li>The camera feed will open automatically</li>
+                <li>Position your camera to capture the table tennis table</li>
+                <li>Start playing - the AI will track ball movements in real-time</li>
+                <li>Ball trajectory will be displayed with visual overlays</li>
+                <li>Heat maps are generated automatically</li>
+                <li>Press <strong>'q'</strong> on your keyboard to stop recording and save</li>
+            </ul>
+        </div>
+
+        <div class="instructions">
+            <h3>💡 Tips for Best Results</h3>
+            <ul>
+                <li>Ensure good lighting conditions</li>
+                <li>Keep the camera stable for accurate tracking</li>
+                <li>Use a contrasting ball color for better detection</li>
+                <li>Position camera to capture the entire table</li>
+            </ul>
+        </div>
+
+        <button id="stopRecording" class="stop-button">Stop & Save Recording</button>
+    </div>
+
+    <script>
+        // Start the Python ball tracking script
+        window.addEventListener('DOMContentLoaded', () => {
+            // Send message to start Python script
+            fetch('/api/start-ball-tracking', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Ball tracking started:', data);
+            })
+            .catch(err => {
+                console.error('Error starting ball tracking:', err);
+                alert('Error starting ball tracking. Please make sure the camera is connected.');
+            });
+        });
+
+        // Handle stop button
+        document.getElementById('stopRecording').addEventListener('click', () => {
+            const button = document.getElementById('stopRecording');
+            button.disabled = true;
+            button.textContent = 'Stopping...';
+            
+            fetch('/api/stop-ball-tracking', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Ball tracking stopped:', data);
+                button.textContent = 'Stopped! Redirecting...';
+                // Redirect back to ball tracking page
+                setTimeout(() => {
+                    window.location.href = 'ball_tracking.html';
+                }, 1000);
+            })
+            .catch(err => {
+                console.error('Error stopping ball tracking:', err);
+                // Still redirect even if there was an error
+                button.textContent = 'Redirecting...';
+                setTimeout(() => {
+                    window.location.href = 'ball_tracking.html';
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>
