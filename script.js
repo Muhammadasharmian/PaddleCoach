@@ -1021,3 +1021,550 @@ if (getStartedNowBtn) {
         }
     });
 }
+
+// ==================== //
+// Chatbot Functionality //
+// ==================== //
+
+const GEMINI_API_KEY = 'AIzaSyBWi0BYuO1CB-J8lvcTmRX4b1JVZ2w-Pvs';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+
+// Match analysis data (embedded from the text file)
+const matchAnalysisData = `
+PADDLECOACH - TABLE TENNIS BIOMECHANICAL ANALYSIS
+
+Video: output_pose/dataDetection_annotated.mp4
+Analysis Date: 2025-11-08 18:54:34
+Processing FPS: 30
+Total Frames Analyzed: 2431
+Total Detections: 4769
+
+Detected Players: Player_1, Player_2
+
+SHOT DETECTION:S
+
+Player_1: 157 total shots (104 Forehand, 53 Backhand)
+Player_2: 151 total shots (94 Forehand, 57 Backhand)
+
+BIOMECHANICAL METRICS:
+
+Player_1:
+- Avg Max Racket Velocity: 1706.90 px/s
+- Avg Min Hip/Knee Angle: 151.07°
+- Avg Min Elbow Angle: 112.88°
+- Avg Center of Gravity Movement: 18.58 px
+
+Player_2:
+- Avg Max Racket Velocity: 1870.90 px/s
+- Avg Min Hip/Knee Angle: 165.28°
+- Avg Min Elbow Angle: 88.94°
+- Avg Center of Gravity Movement: 18.63 px
+
+PERFORMANCE COMPARISON:
+Player_2 has 9.6% faster average racket speed.
+`;
+
+const chatbot = document.getElementById('chatbot');
+const chatbotToggle = document.getElementById('chatbotToggle');
+const chatbotClose = document.getElementById('chatbotClose');
+const chatbotMessages = document.getElementById('chatbotMessages');
+const chatbotInput = document.getElementById('chatbotInput');
+const chatbotSend = document.getElementById('chatbotSend');
+
+let conversationHistory = [];
+let recognition = null;
+let isListening = false;
+let isSpeaking = false;
+let autoSendTimeout = null;
+let isVoiceInput = false; // Track if input was from voice
+let shouldIgnoreRecognition = false; // Flag to ignore recognition while bot is speaking
+
+// Initialize Speech Recognition
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.continuous = true; // Keep listening continuously
+    recognition.interimResults = true; // Show interim results
+    recognition.lang = 'en-US';
+    
+    recognition.onresult = (event) => {
+        // Ignore results if bot is currently speaking
+        if (shouldIgnoreRecognition || isSpeaking) {
+            return;
+        }
+        
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript;
+        }
+        chatbotInput.value = transcript;
+        
+        // Mark as voice input
+        isVoiceInput = true;
+        
+        // Clear existing timeout
+        if (autoSendTimeout) {
+            clearTimeout(autoSendTimeout);
+        }
+        
+        // Auto-send after 2 seconds of silence (only for final results)
+        if (event.results[event.results.length - 1].isFinal) {
+            autoSendTimeout = setTimeout(() => {
+                if (chatbotInput.value.trim() && !shouldIgnoreRecognition && !isSpeaking) {
+                    sendMessage();
+                }
+            }, 2000); // 2 second pause
+        }
+    };
+    
+    recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        // Don't stop listening on minor errors
+        if (event.error !== 'no-speech' && event.error !== 'aborted' && event.error !== 'audio-capture') {
+            console.warn('Speech recognition error that might require restart:', event.error);
+        }
+    };
+    
+    recognition.onend = () => {
+        // Auto-restart recognition if still in listening mode
+        if (isListening) {
+            setTimeout(() => {
+                if (isListening) {
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.warn('Could not restart recognition:', e);
+                    }
+                }
+            }, 100);
+        }
+    };
+}
+
+// ElevenLabs Configuration
+const ELEVENLABS_API_KEY = 'sk_58b691e7138d0e942b1e096150cc237631742c85f467b86f';
+const ELEVENLABS_VOICE_ID = 'ZIlrSGI4jZqobxRKprJz'; // Custom voice
+
+// Initialize Speech Synthesis (fallback)
+const synth = window.speechSynthesis;
+
+// Function to speak text using ElevenLabs
+async function speakText(text) {
+    if (isSpeaking) {
+        // Stop any currently playing audio
+        const existingAudio = document.getElementById('tts-audio');
+        if (existingAudio) {
+            existingAudio.pause();
+            existingAudio.remove();
+        }
+    }
+    
+    // Set flag to ignore speech recognition while bot is speaking
+    // Don't stop the recognition, just ignore its results
+    shouldIgnoreRecognition = true;
+    isSpeaking = true;
+    
+    // Clear the input field to prevent it from showing bot's speech
+    if (isListening) {
+        chatbotInput.value = '';
+    }
+    
+    try {
+        // Call ElevenLabs API
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'audio/mpeg',
+                'Content-Type': 'application/json',
+                'xi-api-key': ELEVENLABS_API_KEY
+            },
+            body: JSON.stringify({
+                text: text,
+                model_id: 'eleven_multilingual_v2',
+                voice_settings: {
+                    stability: 0.5,
+                    similarity_boost: 0.75,
+                    style: 0.0,
+                    use_speaker_boost: true
+                }
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('ElevenLabs API request failed');
+        }
+        
+        // Convert response to blob and play
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        
+        // Create and play audio element
+        const audio = new Audio(audioUrl);
+        audio.id = 'tts-audio';
+        
+        audio.onended = () => {
+            isSpeaking = false;
+            URL.revokeObjectURL(audioUrl);
+            audio.remove();
+            
+            // Wait a bit before re-enabling recognition to avoid tail end
+            setTimeout(() => {
+                shouldIgnoreRecognition = false;
+                chatbotInput.value = ''; // Clear any captured bot speech
+            }, 1000);
+        };
+        
+        audio.onerror = () => {
+            isSpeaking = false;
+            console.error('Audio playback error');
+            
+            setTimeout(() => {
+                shouldIgnoreRecognition = false;
+                chatbotInput.value = '';
+            }, 1000);
+            
+            // Fallback to browser TTS
+            speakTextFallback(text);
+        };
+        
+        await audio.play();
+        
+    } catch (error) {
+        console.error('ElevenLabs TTS error:', error);
+        isSpeaking = false;
+        
+        setTimeout(() => {
+            shouldIgnoreRecognition = false;
+            chatbotInput.value = '';
+        }, 1000);
+        
+        // Fallback to browser TTS
+        speakTextFallback(text);
+    }
+}
+
+// Fallback to browser speech synthesis
+function speakTextFallback(text) {
+    // Set flag to ignore speech recognition while bot is speaking
+    shouldIgnoreRecognition = true;
+    isSpeaking = true;
+    
+    // Clear the input field to prevent it from showing bot's speech
+    if (isListening) {
+        chatbotInput.value = '';
+    }
+    
+    if (synth.speaking) {
+        synth.cancel();
+    }
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+    
+    // Try to use a natural voice
+    const voices = synth.getVoices();
+    const preferredVoice = voices.find(voice => 
+        voice.name.includes('Natural') || 
+        voice.name.includes('Premium') ||
+        voice.lang.startsWith('en')
+    );
+    if (preferredVoice) {
+        utterance.voice = preferredVoice;
+    }
+    
+    utterance.onstart = () => {
+        isSpeaking = true;
+        shouldIgnoreRecognition = true;
+    };
+    
+    utterance.onend = () => {
+        isSpeaking = false;
+        
+        // Wait a bit before re-enabling recognition
+        setTimeout(() => {
+            shouldIgnoreRecognition = false;
+            chatbotInput.value = ''; // Clear any captured bot speech
+        }, 1000);
+    };
+    
+    synth.speak(utterance);
+}
+
+// Function to toggle voice input
+function toggleVoiceInput() {
+    if (!recognition) {
+        alert('Speech recognition is not supported in your browser. Please use Chrome, Edge, or Safari.');
+        return;
+    }
+    
+    if (isListening) {
+        recognition.stop();
+        isListening = false;
+    } else {
+        recognition.start();
+        isListening = true;
+    }
+    updateMicButton();
+}
+
+// Update microphone button appearance
+function updateMicButton() {
+    const micButton = document.getElementById('micButton');
+    if (micButton) {
+        if (isListening) {
+            micButton.classList.add('listening');
+            micButton.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+        } else {
+            micButton.classList.remove('listening');
+            micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+        }
+    }
+}
+
+// Toggle chatbot
+if (chatbotToggle) {
+    chatbotToggle.addEventListener('click', () => {
+        chatbot.classList.toggle('active');
+        if (chatbot.classList.contains('active')) {
+            chatbotInput.focus();
+        }
+    });
+}
+
+// Close chatbot
+if (chatbotClose) {
+    chatbotClose.addEventListener('click', () => {
+        chatbot.classList.remove('active');
+        // Stop any ongoing speech
+        const existingAudio = document.getElementById('tts-audio');
+        if (existingAudio) {
+            existingAudio.pause();
+            existingAudio.remove();
+        }
+        if (synth.speaking) {
+            synth.cancel();
+        }
+        if (isListening && recognition) {
+            recognition.stop();
+            isListening = false;
+        }
+    });
+}
+
+// Send message function
+async function sendMessage() {
+    const message = chatbotInput.value.trim();
+    if (!message) return;
+
+    // Check if this was voice input
+    const shouldSpeak = isVoiceInput;
+    
+    // Reset voice input flag
+    isVoiceInput = false;
+
+    // Clear auto-send timeout if exists
+    if (autoSendTimeout) {
+        clearTimeout(autoSendTimeout);
+        autoSendTimeout = null;
+    }
+
+    // Add user message to chat
+    addMessageToChat(message, 'user');
+    chatbotInput.value = '';
+    chatbotSend.disabled = true;
+
+    // Show typing indicator
+    const typingIndicator = showTypingIndicator();
+
+    try {
+        // Get AI response
+        const response = await getGeminiResponse(message);
+        
+        // Remove typing indicator
+        typingIndicator.remove();
+        
+        // Add bot response to chat
+        addMessageToChat(response, 'bot');
+        
+        // Speak the response only if input was from voice
+        if (shouldSpeak) {
+            speakText(response);
+        }
+    } catch (error) {
+        console.error('Error getting AI response:', error);
+        typingIndicator.remove();
+        // Show the actual error message for debugging
+        const errorMessage = error.message || 'Sorry, I encountered an error. Please try again.';
+        addMessageToChat(`Error: ${errorMessage}`, 'bot');
+    }
+
+    chatbotSend.disabled = false;
+}
+
+// Add message to chat
+function addMessageToChat(message, sender) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chatbot-message ${sender}-message`;
+    
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'message-content';
+    contentDiv.textContent = message;
+    
+    messageDiv.appendChild(contentDiv);
+    chatbotMessages.appendChild(messageDiv);
+    
+    // Scroll to bottom
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    
+    // Add to conversation history
+    conversationHistory.push({
+        role: sender === 'user' ? 'user' : 'model',
+        parts: [{ text: message }]
+    });
+}
+
+// Show typing indicator
+function showTypingIndicator() {
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'chatbot-message bot-message';
+    typingDiv.id = 'typing-indicator';
+    
+    const typingContent = document.createElement('div');
+    typingContent.className = 'typing-indicator';
+    typingContent.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+    
+    typingDiv.appendChild(typingContent);
+    chatbotMessages.appendChild(typingDiv);
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    
+    return typingDiv;
+}
+
+// Get Gemini AI response
+async function getGeminiResponse(userMessage) {
+    // Add current user message to conversation history
+    conversationHistory.push({
+        role: 'user',
+        parts: [{ text: userMessage }]
+    });
+
+    const requestBody = {
+        systemInstruction: {
+            parts: [{
+                text: `You are a table tennis coach AI analyzing a specific match. Here is the match data you have access to:
+
+${matchAnalysisData}
+
+CRITICAL INSTRUCTIONS:
+- When the user mentions "the match", "my match", or asks about match statistics, they are ALWAYS referring to the table tennis match data above
+- This is a table tennis match between Player 1 and Player 2
+- Provide specific stats from this data when asked about the match
+- Be conversational and helpful
+- Give concise answers (2-3 sentences) unless asked for more detail
+- Focus on actionable insights`
+            }]
+        },
+        contents: conversationHistory,
+        generationConfig: {
+            temperature: 0.8,
+            maxOutputTokens: 2000,
+            topK: 40,
+            topP: 0.95,
+        }
+    };
+
+    try {
+        console.log('Making API request to Gemini...');
+        const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('API Error Response:', errorText);
+            
+            try {
+                const errorData = JSON.parse(errorText);
+                console.error('Parsed API Error:', errorData);
+                
+                if (errorData.error && errorData.error.message) {
+                    throw new Error(errorData.error.message);
+                }
+            } catch (parseError) {
+                console.error('Could not parse error response');
+            }
+            
+            throw new Error(`API request failed with status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('API Response:', JSON.stringify(data, null, 2));
+        
+        if (data.candidates && data.candidates.length > 0) {
+            const candidate = data.candidates[0];
+            
+            // Check if response was cut off
+            if (candidate.finishReason === 'MAX_TOKENS') {
+                console.warn('Response was cut off due to MAX_TOKENS');
+                // Still try to get the partial response if available
+            }
+            
+            if (candidate.content && candidate.content.parts && candidate.content.parts.length > 0) {
+                const part = candidate.content.parts[0];
+                console.log('Part:', part);
+                
+                let aiResponse = part.text || '';
+                
+                if (aiResponse) {
+                    // Remove markdown formatting (asterisks for bold/italic)
+                    aiResponse = aiResponse
+                        .replace(/\*\*\*/g, '')  // Remove triple asterisks
+                        .replace(/\*\*/g, '')    // Remove double asterisks (bold)
+                        .replace(/\*/g, '');     // Remove single asterisks (italic)
+                    
+                    // Add only the model's response (user message was already added at function start)
+                    conversationHistory.push({
+                        role: 'model',
+                        parts: [{ text: aiResponse }]
+                    });
+                    
+                    return aiResponse;
+                }
+            }
+            
+            // Handle case where there's no parts (like MAX_TOKENS with no output)
+            if (candidate.finishReason === 'MAX_TOKENS') {
+                throw new Error('Response was cut off. Try asking a shorter question or be more specific.');
+            }
+        }
+        
+        console.error('Invalid response structure:', JSON.stringify(data, null, 2));
+        throw new Error('Invalid response format from API');
+    } catch (error) {
+        console.error('Gemini API Error Details:', error);
+        throw error;
+    }
+}
+
+// Send message on button click
+if (chatbotSend) {
+    chatbotSend.addEventListener('click', sendMessage);
+}
+
+// Send message on Enter key
+if (chatbotInput) {
+    chatbotInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+}
