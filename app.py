@@ -340,13 +340,6 @@ def text_to_speech():
         print(f"  Python executable: {sys.executable}")
         
         try:
-            from elevenlabs import VoiceSettings
-            print("  ✓ VoiceSettings imported")
-        except ImportError as e:
-            print(f"  ❌ Failed to import VoiceSettings: {e}")
-            raise
-            
-        try:
             from elevenlabs.client import ElevenLabs
             print("  ✓ ElevenLabs client imported")
         except ImportError as e:
@@ -377,7 +370,7 @@ def text_to_speech():
         print(f"    - First 150 chars: {text[:150]}...")
         
         print("\n[STEP 3] Initializing Eleven Labs client...")
-        api_key = "sk_677fc8e6e0ad75e169bc0568c59eae51f1f7b94f7c50b66dadd17375255d5f54"
+        api_key = "sk_6d09c01893945be9d97377004f6b6ef2f620892861ff0cd7"
         print(f"  API Key length: {len(api_key)}")
         print(f"  API Key prefix: {api_key[:15]}...")
         
@@ -394,46 +387,28 @@ def text_to_speech():
         
         print("\n[STEP 4] Preparing voice settings...")
         voice_id = "bPMKpgEe88vKSwusXTMU"
-        model = "eleven_multilingual_v2"
+        model_id = "eleven_multilingual_v2"
+        output_format = "mp3_44100_128"
         print(f"  Voice ID: {voice_id}")
-        print(f"  Model: {model}")
+        print(f"  Model ID: {model_id}")
+        print(f"  Output format: {output_format}")
         
-        try:
-            print("  Creating VoiceSettings...")
-            voice_settings = VoiceSettings(
-                stability=0.5,
-                similarity_boost=0.75,
-                style=0.0,
-                use_speaker_boost=True
-            )
-            print(f"  ✓ Voice settings created: {type(voice_settings)}")
-            print(f"    - stability: 0.5")
-            print(f"    - similarity_boost: 0.75")
-            print(f"    - style: 0.0")
-            print(f"    - use_speaker_boost: True")
-        except Exception as settings_error:
-            print(f"  ❌ ERROR creating voice settings")
-            print(f"    Error type: {type(settings_error).__name__}")
-            print(f"    Error message: {str(settings_error)}")
-            raise
-        
-        print("\n[STEP 5] Calling Eleven Labs API...")
-        print(f"  Calling client.generate() with:")
+        print("\n[STEP 5] Calling Eleven Labs API (text_to_speech.convert)...")
+        print(f"  Calling client.text_to_speech.convert() with:")
         print(f"    - text: {len(text)} chars")
-        print(f"    - voice: {voice_id}")
-        print(f"    - model: {model}")
-        print(f"    - voice_settings: {type(voice_settings)}")
+        print(f"    - voice_id: {voice_id}")
+        print(f"    - model_id: {model_id}")
+        print(f"    - output_format: {output_format}")
         
         try:
-            audio_generator = client.generate(
+            audio_generator = client.text_to_speech.convert(
                 text=text,
-                voice=voice_id,
-                model=model,
-                voice_settings=voice_settings
+                voice_id=voice_id,
+                model_id=model_id,
+                output_format=output_format
             )
             print(f"  ✓ API call successful")
             print(f"    Generator type: {type(audio_generator)}")
-            print(f"    Generator: {audio_generator}")
         except Exception as api_error:
             print(f"  ❌ ERROR calling Eleven Labs API")
             print(f"    Error type: {type(api_error).__name__}")

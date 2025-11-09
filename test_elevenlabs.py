@@ -9,37 +9,29 @@ print(f"Python executable: {sys.executable}")
 
 try:
     print("\n[1] Importing elevenlabs...")
-    from elevenlabs import VoiceSettings
     from elevenlabs.client import ElevenLabs
+    from elevenlabs import play
     print("✓ Imports successful")
     
     print("\n[2] Creating client...")
-    api_key = "sk_677fc8e6e0ad75e169bc0568c59eae51f1f7b94f7c50b66dadd17375255d5f54"
+    api_key = "sk_6d09c01893945be9d97377004f6b6ef2f620892861ff0cd7"
     client = ElevenLabs(api_key=api_key)
     print(f"✓ Client created: {type(client)}")
     
-    print("\n[3] Creating voice settings...")
-    voice_settings = VoiceSettings(
-        stability=0.5,
-        similarity_boost=0.75,
-        style=0.0,
-        use_speaker_boost=True
-    )
-    print(f"✓ Voice settings created: {type(voice_settings)}")
-    
-    print("\n[4] Testing API call with short text...")
+    print("\n[3] Testing API call with text to speech...")
     test_text = "Hello, this is a test of the Eleven Labs text to speech API."
     print(f"Test text: {test_text}")
     
-    audio_generator = client.generate(
+    # Using the correct API method as per documentation
+    audio_generator = client.text_to_speech.convert(
         text=test_text,
-        voice="bPMKpgEe88vKSwusXTMU",
-        model="eleven_multilingual_v2",
-        voice_settings=voice_settings
+        voice_id="bPMKpgEe88vKSwusXTMU",
+        model_id="eleven_multilingual_v2",
+        output_format="mp3_44100_128"
     )
     print(f"✓ API call successful, generator: {type(audio_generator)}")
     
-    print("\n[5] Saving audio to file...")
+    print("\n[4] Saving audio to file...")
     from pathlib import Path
     output_path = Path("test_output.mp3")
     
