@@ -550,12 +550,14 @@ button {
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 2.5rem;
     margin-bottom: 4rem;
+    align-items: stretch;
 }
 
 .step-card-link {
     text-decoration: none;
     color: inherit;
-    display: block;
+    display: flex;
+    height: 100%;
     transition: all 0.3s ease;
 }
 
@@ -569,6 +571,10 @@ button {
     padding: 2.5rem;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
 }
 
 .step-card:hover {
@@ -612,6 +618,7 @@ button {
     justify-content: center;
     align-items: center;
     min-height: 200px;
+    margin-top: auto;
 }
 
 .visual-box {
