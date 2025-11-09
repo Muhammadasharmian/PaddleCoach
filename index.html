@@ -731,6 +731,144 @@
         </div>
     </div>
 
+    <!-- Match Video Upload & Processing Modal -->
+    <div class="modal" id="matchVideoModal">
+        <div class="modal-content modal-wide">
+            <button class="modal-close" id="closeMatchVideoModal">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="modal-header">
+                <i class="fas fa-trophy"></i>
+                <h2>Professional Player Analysis</h2>
+                <p>Upload a match video for AI-powered analysis</p>
+            </div>
+            
+            <!-- Upload Section -->
+            <div id="uploadSection" class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt fa-4x"></i>
+                    <h3>Drag & Drop or Click to Upload</h3>
+                    <p>Supported formats: MP4, AVI, MOV</p>
+                    <input type="file" id="matchVideoFileInput" accept="video/*" style="display: none;">
+                    <button class="btn-primary" id="selectVideoBtn">
+                        <i class="fas fa-folder-open"></i>
+                        Select Video File
+                    </button>
+                </div>
+                <div id="selectedFileInfo" class="file-info" style="display: none;">
+                    <i class="fas fa-video"></i>
+                    <span id="fileName"></span>
+                    <span id="fileSize"></span>
+                </div>
+            </div>
+
+            <!-- Preview & Player Selection Section -->
+            <div id="previewSection" class="preview-section" style="display: none;">
+                <h3><i class="fas fa-eye"></i> Video Preview</h3>
+                <div class="preview-video-wrapper">
+                    <video id="previewVideo" controls class="preview-video">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                
+                <div class="player-selection-container">
+                    <h3><i class="fas fa-users"></i> Select Players</h3>
+                    <p class="selection-subtitle">Choose who's playing in this match</p>
+                    
+                    <div class="player-selectors">
+                        <!-- Left Player -->
+                        <div class="player-selector left-player">
+                            <div class="player-icon">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <label class="player-label">Left Player</label>
+                            <select id="leftPlayerSelect" class="player-dropdown">
+                                <option value="myself">Myself</option>
+                                <option value="rank1">#1 Ranked Player</option>
+                                <option value="rank2">#2 Ranked Player</option>
+                            </select>
+                            <div class="player-badge">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                        </div>
+
+                        <!-- VS Divider -->
+                        <div class="vs-divider">
+                            <span>VS</span>
+                        </div>
+
+                        <!-- Right Player -->
+                        <div class="player-selector right-player">
+                            <div class="player-icon">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <label class="player-label">Right Player</label>
+                            <select id="rightPlayerSelect" class="player-dropdown">
+                                <option value="rank1">#1 Ranked Player</option>
+                                <option value="rank2">#2 Ranked Player</option>
+                                <option value="myself">Myself</option>
+                            </select>
+                            <div class="player-badge">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary btn-analyze" id="startAnalysisBtn">
+                        <i class="fas fa-play"></i>
+                        Start Analysis
+                    </button>
+                </div>
+            </div>
+
+            <!-- Processing Section -->
+            <div id="processingSection" class="processing-section" style="display: none;">
+                <div class="processing-animation">
+                    <i class="fas fa-cog fa-spin fa-3x"></i>
+                    <h3>Analyzing Match Video...</h3>
+                    <p>AI is processing player movements, shot detection, and performance metrics</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">0%</p>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="results-section" style="display: none;">
+                <h3><i class="fas fa-check-circle"></i> Analysis Complete!</h3>
+                <div class="video-player-wrapper">
+                    <video id="processedVideo" controls preload="metadata" playsinline class="processed-video">
+                        <source id="videoSource" src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <div class="analysis-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-user"></i>
+                        <span class="stat-value">2</span>
+                        <span class="stat-label">Players Detected</span>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-running"></i>
+                        <span class="stat-value">Advanced</span>
+                        <span class="stat-label">Pose Tracking</span>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-chart-line"></i>
+                        <span class="stat-value">Real-time</span>
+                        <span class="stat-label">Analysis</span>
+                    </div>
+                </div>
+                <button class="btn-primary" id="analyzeAnotherBtn">
+                    <i class="fas fa-redo"></i>
+                    Analyze Another Video
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>

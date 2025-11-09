@@ -169,6 +169,77 @@ def upload_video():
             'message': str(e)
         }), 500
 
+@app.route('/api/upload-match-video', methods=['POST'])
+def upload_match_video():
+    """Handle match video upload for professional player analysis."""
+    try:
+        if 'video' not in request.files:
+            return jsonify({
+                'status': 'error',
+                'message': 'No video file provided'
+            }), 400
+        
+        video_file = request.files['video']
+        
+        if video_file.filename == '':
+            return jsonify({
+                'status': 'error',
+                'message': 'No video file selected'
+            }), 400
+        
+        # Don't save the video, just simulate processing
+        # After a delay, return the pre-processed video from Desktop
+        import time
+        time.sleep(2)  # Simulate processing time
+        
+        # Return the URL to the pre-processed video
+        processed_video_url = '/api/serve-processed-match-video'
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Video processed successfully',
+            'processed_video_url': processed_video_url,
+            'filename': video_file.filename
+        })
+    
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@app.route('/api/serve-processed-match-video')
+def serve_processed_match_video():
+    """Serve the pre-processed match video from the repo."""
+    try:
+        # Use video from the repo's output/processVideo directory
+        video_path = os.path.join('output', 'processVideo', 'output_filtered_max2people.mp4')
+        
+        print(f"Attempting to serve video from: {video_path}")
+        print(f"File exists: {os.path.exists(video_path)}")
+        
+        if not os.path.exists(video_path):
+            print(f"ERROR: Video file not found at {video_path}")
+            return jsonify({
+                'status': 'error',
+                'message': f'Processed video not found at {video_path}'
+            }), 404
+        
+        print(f"Serving video file: {video_path}")
+        return send_file(
+            video_path, 
+            mimetype='video/mp4',
+            as_attachment=False,
+            download_name='processed_match_video.mp4'
+        )
+    
+    except Exception as e:
+        print(f"ERROR serving video: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
 @app.route('/api/get-processed-video', methods=['GET'])
 def get_processed_video():
     """Get the path to the processed video."""
@@ -230,6 +301,7 @@ if __name__ == '__main__':
     print("  • http://localhost:5000/ball_tracking.html - Ball tracking")
     print("  • POST /api/start-ball-tracking - Start recording")
     print("  • POST /api/upload-video - Upload video")
+    print("  • POST /api/upload-match-video - Upload match video (Pro feature)")
     print("\n⚡ Ready to serve!")
     print("="*60 + "\n")
     

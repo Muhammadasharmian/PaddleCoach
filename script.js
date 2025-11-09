@@ -860,12 +860,318 @@ if (logoutButton) {
 // Handle Upload Match Video button
 const uploadMatchVideoBtn = document.getElementById('uploadMatchVideoBtn');
 const matchVideoInput = document.getElementById('matchVideoInput');
+const matchVideoModal = document.getElementById('matchVideoModal');
+const closeMatchVideoModal = document.getElementById('closeMatchVideoModal');
+const matchVideoFileInput = document.getElementById('matchVideoFileInput');
+const selectVideoBtn = document.getElementById('selectVideoBtn');
+const uploadArea = document.getElementById('uploadArea');
+const uploadSection = document.getElementById('uploadSection');
+const previewSection = document.getElementById('previewSection');
+const processingSection = document.getElementById('processingSection');
+const resultsSection = document.getElementById('resultsSection');
+const selectedFileInfo = document.getElementById('selectedFileInfo');
+const analyzeAnotherBtn = document.getElementById('analyzeAnotherBtn');
+const startAnalysisBtn = document.getElementById('startAnalysisBtn');
+const previewVideo = document.getElementById('previewVideo');
+const leftPlayerSelect = document.getElementById('leftPlayerSelect');
+const rightPlayerSelect = document.getElementById('rightPlayerSelect');
 
-if (uploadMatchVideoBtn && matchVideoInput) {
+let selectedFile = null;
+
+if (uploadMatchVideoBtn) {
     uploadMatchVideoBtn.addEventListener('click', () => {
-        matchVideoInput.click();
+        // Open the modal
+        if (matchVideoModal) {
+            matchVideoModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            // Reset modal to upload section
+            resetMatchVideoModal();
+        }
     });
+}
+
+// Close modal
+if (closeMatchVideoModal) {
+    closeMatchVideoModal.addEventListener('click', () => {
+        matchVideoModal.classList.remove('active');
+        document.body.style.overflow = '';
+        resetMatchVideoModal();
+    });
+}
+
+// Close modal when clicking outside
+if (matchVideoModal) {
+    matchVideoModal.addEventListener('click', (e) => {
+        if (e.target === matchVideoModal) {
+            matchVideoModal.classList.remove('active');
+            document.body.style.overflow = '';
+            resetMatchVideoModal();
+        }
+    });
+}
+
+// Select video button
+if (selectVideoBtn) {
+    selectVideoBtn.addEventListener('click', () => {
+        matchVideoFileInput.click();
+    });
+}
+
+// File input change
+if (matchVideoFileInput) {
+    matchVideoFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            selectedFile = file;
+            showFileInfo(file);
+        }
+    });
+}
+
+// Drag and drop functionality
+if (uploadArea) {
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = '#7c3aed';
+        uploadArea.style.background = 'rgba(124, 58, 237, 0.05)';
+    });
+
+    uploadArea.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = '#e5e7eb';
+        uploadArea.style.background = 'transparent';
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = '#e5e7eb';
+        uploadArea.style.background = 'transparent';
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const file = files[0];
+            if (file.type.startsWith('video/')) {
+                selectedFile = file;
+                matchVideoFileInput.files = files;
+                showFileInfo(file);
+            } else {
+                alert('Please upload a video file.');
+            }
+        }
+    });
+}
+
+function showFileInfo(file) {
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
     
+    if (fileName && fileSize && selectedFileInfo) {
+        fileName.textContent = file.name;
+        fileSize.textContent = `(${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
+        selectedFileInfo.style.display = 'flex';
+        
+        // Show preview section instead of auto-uploading
+        setTimeout(() => {
+            showPreview(file);
+        }, 500);
+    }
+}
+
+function showPreview(file) {
+    // Hide upload section, show preview section
+    uploadSection.style.display = 'none';
+    previewSection.style.display = 'block';
+    processingSection.style.display = 'none';
+    resultsSection.style.display = 'none';
+    
+    // Load video preview
+    if (previewVideo) {
+        const videoUrl = URL.createObjectURL(file);
+        previewVideo.src = videoUrl;
+        previewVideo.load();
+    }
+}
+
+// Start Analysis button handler
+if (startAnalysisBtn) {
+    startAnalysisBtn.addEventListener('click', () => {
+        const leftPlayer = leftPlayerSelect.value;
+        const rightPlayer = rightPlayerSelect.value;
+        
+        console.log('Starting analysis with:', { leftPlayer, rightPlayer });
+        
+        if (selectedFile) {
+            uploadMatchVideo(selectedFile, leftPlayer, rightPlayer);
+        }
+    });
+}
+
+async function uploadMatchVideo(file, leftPlayer = 'myself', rightPlayer = 'rank1') {
+    // Show processing section
+    previewSection.style.display = 'none';
+    uploadSection.style.display = 'none';
+    processingSection.style.display = 'block';
+    resultsSection.style.display = 'none';
+    
+    const formData = new FormData();
+    formData.append('video', file);
+    
+    try {
+        // Simulate progress
+        simulateProgress();
+        
+        const response = await fetch('http://localhost:5000/api/upload-match-video', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            // Show results after processing
+            setTimeout(() => {
+                showProcessedVideo(data.processed_video_url);
+            }, 2000);
+        } else {
+            alert('Error: ' + data.message);
+            resetMatchVideoModal();
+        }
+    } catch (error) {
+        console.error('Upload error:', error);
+        alert('Error uploading video. Please try again.');
+        resetMatchVideoModal();
+    }
+}
+
+function simulateProgress() {
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    let progress = 0;
+    
+    const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress > 95) {
+            progress = 95;
+            clearInterval(interval);
+        }
+        
+        if (progressFill && progressText) {
+            progressFill.style.width = progress + '%';
+            progressText.textContent = Math.round(progress) + '%';
+        }
+    }, 300);
+}
+
+function showProcessedVideo(videoUrl) {
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    
+    // Complete progress
+    if (progressFill && progressText) {
+        progressFill.style.width = '100%';
+        progressText.textContent = '100%';
+    }
+    
+    setTimeout(() => {
+        processingSection.style.display = 'none';
+        resultsSection.style.display = 'block';
+        
+        // Set video source directly on the video element
+        const processedVideo = document.getElementById('processedVideo');
+        
+        if (processedVideo) {
+            console.log('Setting video source to:', videoUrl);
+            
+            // Add full URL with cache buster
+            const fullUrl = `http://localhost:5000${videoUrl}?t=${Date.now()}`;
+            console.log('Full video URL:', fullUrl);
+            
+            // Set src directly on video element for better compatibility
+            processedVideo.src = fullUrl;
+            processedVideo.type = 'video/mp4';
+            
+            // Add event listeners for debugging
+            processedVideo.addEventListener('loadstart', () => {
+                console.log('Video loading started...');
+            });
+            
+            processedVideo.addEventListener('loadedmetadata', () => {
+                console.log('Video metadata loaded');
+                console.log('Video duration:', processedVideo.duration);
+                console.log('Video dimensions:', processedVideo.videoWidth, 'x', processedVideo.videoHeight);
+            });
+            
+            processedVideo.addEventListener('loadeddata', () => {
+                console.log('Video data loaded successfully');
+            });
+            
+            processedVideo.addEventListener('canplay', () => {
+                console.log('Video can play now');
+                // Try to play the video
+                processedVideo.play().catch(e => console.log('Autoplay prevented:', e));
+            });
+            
+            processedVideo.addEventListener('error', (e) => {
+                console.error('Video error event:', e);
+                if (processedVideo.error) {
+                    console.error('Error code:', processedVideo.error.code);
+                    console.error('Error message:', processedVideo.error.message);
+                    
+                    // Error codes: 1=ABORTED, 2=NETWORK, 3=DECODE, 4=SRC_NOT_SUPPORTED
+                    const errorMessages = {
+                        1: 'Video loading aborted',
+                        2: 'Network error while loading video',
+                        3: 'Video decoding failed (codec issue)',
+                        4: 'Video format not supported by browser'
+                    };
+                    console.error('Error description:', errorMessages[processedVideo.error.code] || 'Unknown error');
+                }
+            });
+            
+            // Try to load the video
+            processedVideo.load();
+        } else {
+            console.error('Video element not found');
+        }
+    }, 500);
+}
+
+function resetMatchVideoModal() {
+    selectedFile = null;
+    uploadSection.style.display = 'block';
+    previewSection.style.display = 'none';
+    processingSection.style.display = 'none';
+    resultsSection.style.display = 'none';
+    
+    if (selectedFileInfo) {
+        selectedFileInfo.style.display = 'none';
+    }
+    
+    if (matchVideoFileInput) {
+        matchVideoFileInput.value = '';
+    }
+    
+    if (previewVideo) {
+        previewVideo.src = '';
+    }
+    
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    if (progressFill && progressText) {
+        progressFill.style.width = '0%';
+        progressText.textContent = '0%';
+    }
+}
+
+// Analyze another video button
+if (analyzeAnotherBtn) {
+    analyzeAnotherBtn.addEventListener('click', () => {
+        resetMatchVideoModal();
+    });
+}
+
+// Keep the old matchVideoInput for backward compatibility
+if (matchVideoInput) {
     matchVideoInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -881,6 +1187,7 @@ if (uploadMatchVideoBtn && matchVideoInput) {
         }
     });
 }
+
 
 // Function to check if user is logged in
 function isUserLoggedIn() {
