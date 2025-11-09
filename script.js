@@ -1001,3 +1001,23 @@ if (trainNowBtn) {
         }
     });
 }
+
+// Handle Get Started Now button
+const getStartedNowBtn = document.getElementById('getStartedNowBtn');
+if (getStartedNowBtn) {
+    getStartedNowBtn.addEventListener('click', () => {
+        if (isUserLoggedIn()) {
+            // When logged in, scroll to features section
+            const featuresSection = document.getElementById('core-features');
+            if (featuresSection) {
+                featuresSection.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        } else {
+            // When not logged in, prompt to login or sign up
+            promptLogin();
+        }
+    });
+}
