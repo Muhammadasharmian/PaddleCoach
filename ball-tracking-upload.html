@@ -250,25 +250,7 @@
             </div>
 
             <div class="stats-panel">
-                <h3 style="text-align: center; margin-bottom: 1.5rem;">📊 Analysis Statistics</h3>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="ballDetections">--</div>
-                        <div class="stat-label">Ball Detections</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="avgSpeed">--</div>
-                        <div class="stat-label">Avg Speed (km/h)</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="rallies">--</div>
-                        <div class="stat-label">Rallies Detected</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="duration">--</div>
-                        <div class="stat-label">Duration</div>
-                    </div>
-                </div>
+                <h3 style="text-align: center; font-size: 1.5rem;">🎯 Let's move to step 2: Player's Body Tracking</h3>
             </div>
         </div>
     </div>
@@ -300,57 +282,50 @@
             // Show processing message
             processingStatus.innerHTML = '<div class="spinner"></div><span>Loading AI tracked video...</span>';
             
-            try {
-                // Get the processed video from output/demoVideo/
-                const processedResponse = await fetch('/api/get-processed-video');
-                const processedData = await processedResponse.json();
-                
-                if (processedData.status === 'success') {
-                    // Set the processed video from output/demoVideo/
-                    processedVideo.src = '/' + processedData.video_path;
-                    processingStatus.innerHTML = '<span style="color: #4ade80;">✅ AI tracking loaded!</span>';
-                } else {
-                    throw new Error('No processed video found');
+            // Directly set the processed video path
+            processedVideo.src = '/output/demoVideo/output_dataDetection.mp4';
+            
+            // Add error handling for processed video
+            processedVideo.addEventListener('error', (e) => {
+                console.error('Processed video error:', e);
+                console.error('Error code:', processedVideo.error);
+                processingStatus.innerHTML = '<span style="color: #f87171;">❌ Error loading AI tracked video</span>';
+            });
+            
+            processedVideo.addEventListener('loadedmetadata', () => {
+                console.log('Processed video metadata loaded, duration:', processedVideo.duration);
+                processingStatus.innerHTML = '<span style="color: #4ade80;">✅ AI tracking loaded!</span>';
+            });
+            
+            processedVideo.addEventListener('canplay', () => {
+                console.log('Processed video can play');
+            });
+            
+            // Load the video
+            processedVideo.load();
+            
+            // Auto-play both videos together when both are ready
+            let originalReady = false;
+            let processedReady = false;
+            
+            const tryAutoPlay = () => {
+                if (originalReady && processedReady) {
+                    originalVideo.currentTime = 0;
+                    processedVideo.currentTime = 0;
+                    originalVideo.play().catch(e => console.log('Original autoplay prevented:', e));
+                    processedVideo.play().catch(e => console.log('Processed autoplay prevented:', e));
                 }
-                
-            } catch (err) {
-                console.error('Error loading processed video:', err);
-                processingStatus.innerHTML = '<span style="color: #f87171;">❌ No AI tracked video available in output/demoVideo/</span>';
-            }
-
-            // Sync video playback - keep them at the same frame
-            originalVideo.addEventListener('play', () => {
-                processedVideo.currentTime = originalVideo.currentTime;
-                processedVideo.play();
-            });
-            originalVideo.addEventListener('pause', () => processedVideo.pause());
-            originalVideo.addEventListener('seeked', () => {
-                processedVideo.currentTime = originalVideo.currentTime;
-            });
-
-            processedVideo.addEventListener('play', () => {
-                originalVideo.currentTime = processedVideo.currentTime;
-                originalVideo.play();
-            });
-            processedVideo.addEventListener('pause', () => originalVideo.pause());
-            processedVideo.addEventListener('seeked', () => {
-                originalVideo.currentTime = processedVideo.currentTime;
-            });
-
-            // Update stats (mock data)
-            setTimeout(() => {
-                document.getElementById('ballDetections').textContent = '1,247';
-                document.getElementById('avgSpeed').textContent = '45.3';
-                document.getElementById('rallies').textContent = '23';
-                
-                // Get video duration
-                originalVideo.addEventListener('loadedmetadata', () => {
-                    const duration = Math.floor(originalVideo.duration);
-                    const minutes = Math.floor(duration / 60);
-                    const seconds = duration % 60;
-                    document.getElementById('duration').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                });
-            }, 1000);
+            };
+            
+            originalVideo.addEventListener('canplay', () => {
+                originalReady = true;
+                tryAutoPlay();
+            }, { once: true });
+            
+            processedVideo.addEventListener('canplay', () => {
+                processedReady = true;
+                tryAutoPlay();
+            }, { once: true });
         });
     </script>
 </body>
