@@ -36,11 +36,11 @@ from vision.video_processor import VideoProcessor
 
 
 def main():
-    # Find video in input_processVideo directory
-    input_dir = Path("input_processVideo")
+    # Find video in input/processVideo directory
+    input_dir = Path("input/processVideo")
     
     if not input_dir.exists():
-        print(f"Error: Directory 'input_processVideo/' not found!")
+        print(f"Error: Directory 'input/processVideo/' not found!")
         print("Please create the directory and add a video file.")
         return
     
@@ -51,7 +51,7 @@ def main():
         video_files.extend(list(input_dir.glob(ext)))
     
     if not video_files:
-        print(f"Error: No video files found in 'input_processVideo/' directory!")
+        print(f"Error: No video files found in 'input/processVideo/' directory!")
         print("Supported formats: .mp4, .avi, .mov, .mkv")
         return
     
@@ -82,7 +82,7 @@ def main():
     # Create processor with target FPS (30 for real-time)
     processor = VideoProcessor(
         video_path=video_path,
-        output_dir="output_processVideo",
+        output_dir="output/processVideo",
         target_fps=30  # Process at 30 FPS for real-time performance
     )
     

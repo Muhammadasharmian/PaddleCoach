@@ -20,13 +20,13 @@ from models.ball_data import BallData
 class RealtimeBallTracker:
     """Real-time ball tracking using camera feed."""
     
-    def __init__(self, camera_id: int = 0, output_dir: str = "output_ballTracking"):
+    def __init__(self, camera_id: int = 0, output_dir: str = "output/ballTracking"):
         """
         Initialize real-time ball tracker.
         
         Args:
             camera_id: Camera device ID (0 for default camera)
-            output_dir: Directory for output files (default: output_ballTracking)
+            output_dir: Directory for output files (default: output/ballTracking)
         """
         self.camera_id = camera_id
         self.output_dir = Path(output_dir)

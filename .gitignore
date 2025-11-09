@@ -1,6 +1,8 @@
-# Ignore contents of output folders but keep the folders themselves
-output*/
-!output*/.gitkeep
+# Ignore contents of input and output folders but keep the folder structure
+input/**/*
+!input/**/.gitkeep
+output/**/*
+!output/**/.gitkeep
 
 *.pt
 *.mp4

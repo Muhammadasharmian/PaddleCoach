@@ -14,20 +14,20 @@ from vision.game_analyzer import GameAnalyzer
 def main():
     """Main function to run game analysis."""
     
-    # Get video path from argument or find any mp4 in output_pose/
+    # Get video path from argument or find any mp4 in output/processVideo/
     if len(sys.argv) > 1:
         video_path = sys.argv[1]
     else:
-        # Find any .mp4 file in output_pose/ directory
-        output_dir = Path("output_processVideo")
+        # Find any .mp4 file in output/processVideo/ directory
+        output_dir = Path("output/processVideo")
         if not output_dir.exists():
-            print(f"Error: Directory 'output_pose/' not found!")
+            print(f"Error: Directory 'output/processVideo/' not found!")
             print("\nPlease run process_video.py first to generate the annotated video.")
             return
         
         mp4_files = list(output_dir.glob("*.mp4"))
         if not mp4_files:
-            print(f"Error: No .mp4 files found in 'output_pose/' directory!")
+            print(f"Error: No .mp4 files found in 'output/processVideo/' directory!")
             print("\nPlease run process_video.py first to generate the annotated video.")
             return
         
@@ -62,7 +62,7 @@ def main():
     print("-"*60)
     
     # Create analyzer
-    analyzer = GameAnalyzer(output_dir="output_analysisText")
+    analyzer = GameAnalyzer(output_dir="output/analysisText")
     
     # Generate analysis report
     report_path = analyzer.generate_analysis_report(

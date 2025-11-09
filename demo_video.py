@@ -7,8 +7,8 @@ import time
 from pathlib import Path
 
 
-def play_demo_video(input_video: str = "input_demoVideo/dataDetection.mp4", 
-                    output_video: str = "output_demoVideo/output_dataDetection.mp4"):
+def play_demo_video(input_video: str = "input/demoVideo/dataDetection.mp4", 
+                    output_video: str = "output/demoVideo/output_dataDetection.mp4"):
     """
     Play the processed pose detection video.
     
