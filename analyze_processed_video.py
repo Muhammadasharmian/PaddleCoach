@@ -19,7 +19,7 @@ def main():
         video_path = sys.argv[1]
     else:
         # Find any .mp4 file in output_pose/ directory
-        output_dir = Path("output_pose")
+        output_dir = Path("output_processVideo")
         if not output_dir.exists():
             print(f"Error: Directory 'output_pose/' not found!")
             print("\nPlease run process_video.py first to generate the annotated video.")
@@ -62,7 +62,7 @@ def main():
     print("-"*60)
     
     # Create analyzer
-    analyzer = GameAnalyzer(output_dir="analysis_output")
+    analyzer = GameAnalyzer(output_dir="output_analysisText")
     
     # Generate analysis report
     report_path = analyzer.generate_analysis_report(

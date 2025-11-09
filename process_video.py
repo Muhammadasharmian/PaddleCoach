@@ -36,13 +36,32 @@ from vision.video_processor import VideoProcessor
 
 
 def main():
-    # Path to the video
-    video_path = "dataDetection.mp4"
+    # Find video in input_processVideo directory
+    input_dir = Path("input_processVideo")
     
-    if not Path(video_path).exists():
-        print(f"Error: Video file '{video_path}' not found!")
-        print("Please make sure dataDetection.mp4 is in the project root directory.")
+    if not input_dir.exists():
+        print(f"Error: Directory 'input_processVideo/' not found!")
+        print("Please create the directory and add a video file.")
         return
+    
+    # Look for video files (mp4, avi, mov, etc.)
+    video_extensions = ['*.mp4', '*.avi', '*.mov', '*.mkv', '*.MP4', '*.AVI', '*.MOV']
+    video_files = []
+    for ext in video_extensions:
+        video_files.extend(list(input_dir.glob(ext)))
+    
+    if not video_files:
+        print(f"Error: No video files found in 'input_processVideo/' directory!")
+        print("Supported formats: .mp4, .avi, .mov, .mkv")
+        return
+    
+    # Use the first video found
+    video_path = str(video_files[0])
+    print(f"Found video: {video_path}")
+    
+    if len(video_files) > 1:
+        print(f"Note: Multiple videos found. Using {video_files[0].name}")
+        print(f"Other videos: {[v.name for v in video_files[1:]]}")
     
     print("="*60)
     print("🏓 PaddleCoach - Table Tennis Pose Analysis")
@@ -63,7 +82,7 @@ def main():
     # Create processor with target FPS (30 for real-time)
     processor = VideoProcessor(
         video_path=video_path,
-        output_dir="output_pose",
+        output_dir="output_processVideo",
         target_fps=30  # Process at 30 FPS for real-time performance
     )
     
