@@ -286,6 +286,231 @@ def get_processed_video():
             'message': str(e)
         }), 500
 
+@app.route('/api/get-analysis-text')
+def get_analysis_text():
+    """Get the latest analysis text file."""
+    try:
+        analysis_dir = Path('output/analysisText')
+        
+        if not analysis_dir.exists():
+            return jsonify({
+                'status': 'error',
+                'message': 'Analysis directory not found'
+            }), 404
+        
+        # Get all .txt files in the directory
+        txt_files = list(analysis_dir.glob('*.txt'))
+        
+        if not txt_files:
+            return jsonify({
+                'status': 'error',
+                'message': 'No analysis files found'
+            }), 404
+        
+        # Get the most recent file
+        latest_file = max(txt_files, key=lambda p: p.stat().st_mtime)
+        
+        # Read the file content
+        with open(latest_file, 'r', encoding='utf-8') as f:
+            analysis_text = f.read()
+        
+        return jsonify({
+            'status': 'success',
+            'analysisText': analysis_text,
+            'filename': latest_file.name
+        })
+    
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@app.route('/api/text-to-speech', methods=['POST'])
+def text_to_speech():
+    """Convert text to speech using Eleven Labs API."""
+    print("\n" + "="*60)
+    print("🎙️  TEXT-TO-SPEECH REQUEST RECEIVED")
+    print("="*60)
+    
+    try:
+        print("\n[STEP 1] Importing libraries...")
+        import sys
+        print(f"  Python version: {sys.version}")
+        print(f"  Python executable: {sys.executable}")
+        
+        try:
+            from elevenlabs import VoiceSettings
+            print("  ✓ VoiceSettings imported")
+        except ImportError as e:
+            print(f"  ❌ Failed to import VoiceSettings: {e}")
+            raise
+            
+        try:
+            from elevenlabs.client import ElevenLabs
+            print("  ✓ ElevenLabs client imported")
+        except ImportError as e:
+            print(f"  ❌ Failed to import ElevenLabs: {e}")
+            raise
+            
+        from datetime import datetime
+        print("  ✓ All libraries imported successfully")
+        
+        print("\n[STEP 2] Parsing request data...")
+        print(f"  Request method: {request.method}")
+        print(f"  Content-Type: {request.content_type}")
+        print(f"  Request data raw: {request.get_data()[:200]}")
+        
+        data = request.json
+        print(f"  Parsed JSON keys: {list(data.keys()) if data else 'None'}")
+        text = data.get('text', '') if data else ''
+        
+        if not text:
+            print("  ❌ ERROR: No text provided in request")
+            return jsonify({
+                'status': 'error',
+                'message': 'No text provided'
+            }), 400
+        
+        print(f"  ✓ Text received")
+        print(f"    - Length: {len(text)} characters")
+        print(f"    - First 150 chars: {text[:150]}...")
+        
+        print("\n[STEP 3] Initializing Eleven Labs client...")
+        api_key = "sk_677fc8e6e0ad75e169bc0568c59eae51f1f7b94f7c50b66dadd17375255d5f54"
+        print(f"  API Key length: {len(api_key)}")
+        print(f"  API Key prefix: {api_key[:15]}...")
+        
+        try:
+            print("  Calling ElevenLabs(api_key=...)")
+            client = ElevenLabs(api_key=api_key)
+            print(f"  ✓ Client initialized: {type(client)}")
+            print(f"  Client attributes: {dir(client)[:10]}...")
+        except Exception as client_error:
+            print(f"  ❌ ERROR initializing client")
+            print(f"    Error type: {type(client_error).__name__}")
+            print(f"    Error message: {str(client_error)}")
+            raise
+        
+        print("\n[STEP 4] Preparing voice settings...")
+        voice_id = "bPMKpgEe88vKSwusXTMU"
+        model = "eleven_multilingual_v2"
+        print(f"  Voice ID: {voice_id}")
+        print(f"  Model: {model}")
+        
+        try:
+            print("  Creating VoiceSettings...")
+            voice_settings = VoiceSettings(
+                stability=0.5,
+                similarity_boost=0.75,
+                style=0.0,
+                use_speaker_boost=True
+            )
+            print(f"  ✓ Voice settings created: {type(voice_settings)}")
+            print(f"    - stability: 0.5")
+            print(f"    - similarity_boost: 0.75")
+            print(f"    - style: 0.0")
+            print(f"    - use_speaker_boost: True")
+        except Exception as settings_error:
+            print(f"  ❌ ERROR creating voice settings")
+            print(f"    Error type: {type(settings_error).__name__}")
+            print(f"    Error message: {str(settings_error)}")
+            raise
+        
+        print("\n[STEP 5] Calling Eleven Labs API...")
+        print(f"  Calling client.generate() with:")
+        print(f"    - text: {len(text)} chars")
+        print(f"    - voice: {voice_id}")
+        print(f"    - model: {model}")
+        print(f"    - voice_settings: {type(voice_settings)}")
+        
+        try:
+            audio_generator = client.generate(
+                text=text,
+                voice=voice_id,
+                model=model,
+                voice_settings=voice_settings
+            )
+            print(f"  ✓ API call successful")
+            print(f"    Generator type: {type(audio_generator)}")
+            print(f"    Generator: {audio_generator}")
+        except Exception as api_error:
+            print(f"  ❌ ERROR calling Eleven Labs API")
+            print(f"    Error type: {type(api_error).__name__}")
+            print(f"    Error message: {str(api_error)}")
+            import traceback
+            print(f"    Traceback:")
+            traceback.print_exc()
+            raise
+        
+        print("\n[STEP 6] Creating output directory...")
+        audio_dir = Path('output/coaching_audio')
+        audio_dir.mkdir(parents=True, exist_ok=True)
+        print(f"  ✓ Directory ensured: {audio_dir.absolute()}")
+        
+        print("\n[STEP 7] Generating filename...")
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f'coaching_advice_{timestamp}.mp3'
+        filepath = audio_dir / filename
+        print(f"  ✓ Filename: {filename}")
+        print(f"  ✓ Full path: {filepath.absolute()}")
+        
+        print("\n[STEP 8] Writing audio to file...")
+        print(f"  Opening file: {filepath}")
+        chunk_count = 0
+        total_bytes = 0
+        
+        try:
+            with open(filepath, 'wb') as f:
+                print("  File opened, iterating over chunks...")
+                for chunk in audio_generator:
+                    if chunk:
+                        chunk_count += 1
+                        chunk_size = len(chunk)
+                        total_bytes += chunk_size
+                        f.write(chunk)
+                        print(f"    Chunk {chunk_count}: {chunk_size} bytes (total: {total_bytes})")
+            
+            print(f"  ✓ Audio file written successfully!")
+            print(f"    Total chunks: {chunk_count}")
+            print(f"    Total size: {total_bytes} bytes ({total_bytes/1024:.2f} KB)")
+            print(f"    File exists: {filepath.exists()}")
+            print(f"    File size on disk: {filepath.stat().st_size} bytes")
+        except Exception as write_error:
+            print(f"  ❌ ERROR writing audio file")
+            print(f"    Error type: {type(write_error).__name__}")
+            print(f"    Error message: {str(write_error)}")
+            raise
+        
+        print("\n[STEP 9] Preparing response...")
+        response_data = {
+            'status': 'success',
+            'audio_url': f'/output/coaching_audio/{filename}'
+        }
+        print(f"  Response: {response_data}")
+        
+        print("\n" + "="*60)
+        print("✅ TEXT-TO-SPEECH COMPLETED SUCCESSFULLY")
+        print("="*60 + "\n")
+        
+        return jsonify(response_data)
+        
+    except Exception as e:
+        print("\n" + "="*60)
+        print("❌ TEXT-TO-SPEECH FAILED")
+        print("="*60)
+        print(f"Error type: {type(e).__name__}")
+        print(f"Error message: {str(e)}")
+        print(f"\nFull traceback:")
+        import traceback
+        traceback.print_exc()
+        print("="*60 + "\n")
+        
+        return jsonify({
+            'status': 'error',
+            'message': f'Failed to generate audio: {str(e)}'
+        }), 500
+
 @app.route('/output/<path:filepath>')
 def serve_output(filepath):
     """Serve files from the output directory."""

@@ -219,6 +219,144 @@
                 </div>
             </div>
         </div>
+
+        <!-- Analysis and Coaching Section -->
+        <div class="analysis-section">
+            <h2 class="section-title" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                🎓 Step 3: Analysis and Coaching
+            </h2>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <button id="analyseBtn" style="
+                    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                    color: #ffffff;
+                    padding: 1.25rem 3.5rem;
+                    border-radius: 50px;
+                    border: 3px solid rgba(251, 191, 36, 0.5);
+                    font-size: 1.3rem;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+                    letter-spacing: 0.5px;
+                " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(245, 158, 11, 0.6)';" 
+                   onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(245, 158, 11, 0.4)';">
+                    🔍 Analyse
+                </button>
+            </div>
+
+            <div id="coachingSection" style="display: none;">
+                <div id="loadingIndicator" style="
+                    text-align: center;
+                    padding: 2.5rem;
+                    background: rgba(245, 158, 11, 0.15);
+                    border: 3px solid rgba(245, 158, 11, 0.4);
+                    border-radius: 15px;
+                    margin-bottom: 2rem;
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                ">
+                    <div class="spinner" style="
+                        display: inline-block;
+                        width: 40px;
+                        height: 40px;
+                        border: 5px solid rgba(245, 158, 11, 0.3);
+                        border-top-color: #fbbf24;
+                        border-radius: 50%;
+                        animation: spin 1s linear infinite;
+                    "></div>
+                    <p style="color: #f3f4f6; margin-top: 1.5rem; font-size: 1.2rem; font-weight: 500; letter-spacing: 0.3px;">
+                        Your coach is analyzing your performance...
+                    </p>
+                </div>
+
+                <div id="coachingAdvice" style="
+                    background: #fef3c7;
+                    border: 3px solid rgba(245, 158, 11, 0.8);
+                    border-radius: 15px;
+                    padding: 2.5rem;
+                    display: none;
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                ">
+                    <div style="display: flex; align-items: center; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 2px solid rgba(245, 158, 11, 0.4);">
+                        <div style="
+                            width: 70px;
+                            height: 70px;
+                            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 2.5rem;
+                            margin-right: 1.5rem;
+                            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
+                        ">
+                            �️
+                        </div>
+                        <div>
+                            <h3 style="color: #d97706; margin: 0; font-size: 1.5rem; font-weight: bold;">Your Personal Coach</h3>
+                            <p style="color: #92400e; margin: 0.5rem 0 0 0; font-size: 1.1rem; font-weight: 500;">
+                                AI-Powered Voice Analysis
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Audio Player Section -->
+                    <div id="audioPlayerSection" style="
+                        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+                        border-radius: 12px;
+                        padding: 1.5rem;
+                        margin-bottom: 2rem;
+                        display: none;
+                    ">
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <button id="playAudioBtn" style="
+                                background: white;
+                                color: #f59e0b;
+                                border: none;
+                                padding: 1rem 2rem;
+                                border-radius: 50px;
+                                cursor: pointer;
+                                font-size: 1.1rem;
+                                font-weight: 600;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 0.5rem;
+                                transition: all 0.3s ease;
+                                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                <span id="playIcon">🔊</span> <span id="playBtnText">Listen to Your Coach</span>
+                            </button>
+                            <div id="audioLoadingIndicator" style="
+                                display: none;
+                                color: white;
+                                font-size: 1rem;
+                                font-weight: 500;
+                                text-align: center;
+                            ">
+                                <div style="display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 10px;"></div>
+                                🎵 Generating voice coaching...
+                            </div>
+                            <audio id="coachingAudio" controls style="
+                                width: 100%;
+                                border-radius: 10px;
+                                display: none;
+                            "></audio>
+                        </div>
+                    </div>
+
+                    <div id="coachingText" style="
+                        color: #1f2937;
+                        line-height: 2;
+                        font-size: 1.15rem;
+                        white-space: pre-wrap;
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+                        font-weight: 400;
+                        letter-spacing: 0.3px;
+                    "></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -311,6 +449,145 @@
                 console.error(`Video error for ${video.id}:`, e);
                 console.error('Error code:', video.error);
             });
+        });
+
+        // Analysis and Coaching functionality
+        const analyseBtn = document.getElementById('analyseBtn');
+        const coachingSection = document.getElementById('coachingSection');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const coachingAdvice = document.getElementById('coachingAdvice');
+        const coachingText = document.getElementById('coachingText');
+
+        analyseBtn.addEventListener('click', async () => {
+            // Show coaching section and loading
+            coachingSection.style.display = 'block';
+            loadingIndicator.style.display = 'block';
+            coachingAdvice.style.display = 'none';
+            
+            // Disable button
+            analyseBtn.disabled = true;
+            analyseBtn.style.opacity = '0.5';
+            analyseBtn.style.cursor = 'not-allowed';
+
+            try {
+                // Fetch the analysis text file
+                const response = await fetch('/api/get-analysis-text');
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch analysis data');
+                }
+
+                const data = await response.json();
+                const analysisText = data.analysisText;
+
+                // Call Gemini API for coaching advice
+                const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=AIzaSyBOV4BaFB4iZQI9VhUnXTXgwNgXM38umzE`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `You are a chill table tennis coach with a Southern speaking tone. Based on the following biomechanical analysis, provide friendly and encouraging coaching advice to help the players improve their game. Keep it conversational, warm, and supportive. Moreover, involve exact measurements to bolster your advice. Also, player 1 is Ashar and player 2 is Ashwani. Throughout your conversation, refer player 1 as Ashar and player 2 as Ashwani\n\nAnalysis:\n${analysisText}`
+                            }]
+                        }],
+                        generationConfig: {
+                            temperature: 0.9,
+                            topK: 40,
+                            topP: 0.95,
+                            maxOutputTokens: 2048,
+                        }
+                    })
+                });
+
+                if (!geminiResponse.ok) {
+                    throw new Error('Failed to get coaching advice from Gemini');
+                }
+
+                const geminiData = await geminiResponse.json();
+                const coachingResponse = geminiData.candidates[0].content.parts[0].text;
+
+                // Display coaching advice
+                loadingIndicator.style.display = 'none';
+                coachingAdvice.style.display = 'block';
+                coachingText.textContent = coachingResponse;
+                
+                // Show audio player section
+                document.getElementById('audioPlayerSection').style.display = 'block';
+                
+                // Store coaching text for audio generation
+                window.currentCoachingText = coachingResponse;
+
+            } catch (error) {
+                console.error('Error:', error);
+                loadingIndicator.style.display = 'none';
+                coachingAdvice.style.display = 'block';
+                coachingText.innerHTML = `<div style="color: #991b1b; font-size: 1.15rem; font-weight: 500; line-height: 2;">
+                    <strong style="color: #dc2626; font-size: 1.3rem;">⚠️ Oops!</strong><br><br>
+                    Sorry partner, looks like we hit a snag getting your coaching advice.<br><br>
+                    <em style="color: #1f2937;">Error: ${error.message}</em><br><br>
+                    Please try again in a moment.
+                </div>`;
+            } finally {
+                // Re-enable button
+                analyseBtn.disabled = false;
+                analyseBtn.style.opacity = '1';
+                analyseBtn.style.cursor = 'pointer';
+            }
+        });
+
+        // Handle audio playback with Eleven Labs
+        document.getElementById('playAudioBtn').addEventListener('click', async () => {
+            const playBtn = document.getElementById('playAudioBtn');
+            const playBtnText = document.getElementById('playBtnText');
+            const audioLoadingIndicator = document.getElementById('audioLoadingIndicator');
+            const audioPlayer = document.getElementById('coachingAudio');
+            const playIcon = document.getElementById('playIcon');
+            
+            try {
+                // Show loading indicator
+                playBtn.disabled = true;
+                audioLoadingIndicator.style.display = 'block';
+                
+                // Call text-to-speech API
+                const response = await fetch('/api/text-to-speech', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: window.currentCoachingText
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to generate audio');
+                }
+                
+                const data = await response.json();
+                
+                // Hide loading, show audio player
+                audioLoadingIndicator.style.display = 'none';
+                audioPlayer.style.display = 'block';
+                audioPlayer.src = data.audio_url;
+                
+                // Auto-play the audio
+                await audioPlayer.play();
+                
+                // Update button text
+                playIcon.textContent = '✅';
+                playBtnText.textContent = 'Audio Ready - Playing!';
+                
+            } catch (error) {
+                console.error('Error generating audio:', error);
+                audioLoadingIndicator.style.display = 'none';
+                playBtnText.textContent = 'Error - Try Again';
+                playIcon.textContent = '⚠️';
+                alert('Sorry, there was an error generating the audio. Please try again.');
+            } finally {
+                playBtn.disabled = false;
+            }
         });
     </script>
 </body>
