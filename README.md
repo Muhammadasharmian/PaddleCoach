@@ -1,4 +1,4 @@
-# 🏓 PaddleCoach
+# 🏓 ToSpinOrNotToSpin
 
 **AI-Powered Table Tennis Coaching Platform**
 
