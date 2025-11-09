@@ -1,4 +1,7 @@
-output/
+# Ignore contents of output folders but keep the folders themselves
+output*/
+!output*/.gitkeep
+
 *.pt
 *.mp4
 __pycache__/
