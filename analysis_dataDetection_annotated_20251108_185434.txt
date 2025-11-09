@@ -8,14 +8,14 @@ Processing FPS: 30
 Total Frames Analyzed: 2431
 Total Detections: 4769
 
-Detected Players: Player_1, Player_2
+Detected Players: Marcus Chen (You), Daniel Rodriguez
 Number of Players: 2
 
 ======================================================================
                            SHOT DETECTION
 ======================================================================
 
-Player_1:
+Marcus Chen (You):
   Total Shots Detected: 157
 
   Forehand Shots: 104
@@ -34,7 +34,7 @@ Player_1:
     10. Forehand   | Frames   140-  141 | Duration: 0.03s
     ... and 147 more shots
 
-Player_2:
+Daniel Rodriguez:
   Total Shots Detected: 151
 
   Forehand Shots: 94
@@ -57,7 +57,7 @@ Player_2:
                       BIOMECHANICAL ANALYSIS
 ======================================================================
 
-Player_1 - Detailed Stroke Metrics:
+Marcus Chen (You) - Detailed Stroke Metrics:
 ----------------------------------------------------------------------
 
   Shot 1: Forehand (Frames 4-7)
@@ -130,7 +130,7 @@ Player_1 - Detailed Stroke Metrics:
       Horizontal Movement:    10.61 px
       Vertical Movement:      22.14 px
 
-Player_2 - Detailed Stroke Metrics:
+Daniel Rodriguez - Detailed Stroke Metrics:
 ----------------------------------------------------------------------
 
   Shot 1: Backhand (Frames 4-10)
@@ -208,18 +208,18 @@ Player_2 - Detailed Stroke Metrics:
 ======================================================================
 
 Shot Count:
-  Player_1: 157 shots
-  Player_2: 151 shots
+  Marcus Chen (You): 157 shots
+  Daniel Rodriguez: 151 shots
 
 Average Performance Metrics:
 
-Player_1:
+Marcus Chen (You):
   Avg Max Racket Velocity:  1706.90 px/s
   Avg Min Hip/Knee Angle:    151.07°
   Avg Min Elbow Angle:       112.88°
   Avg CoG Movement:           18.58 px
 
-Player_2:
+Daniel Rodriguez:
   Avg Max Racket Velocity:  1870.90 px/s
   Avg Min Hip/Knee Angle:    165.28°
   Avg Min Elbow Angle:        88.94°
@@ -228,7 +228,58 @@ Player_2:
 ----------------------------------------------------------------------
 Performance Edge:
 
-  Player_2 has 9.6% faster average racket speed
+  Daniel Rodriguez has 9.6% faster average racket speed
+
+======================================================================
+                   COACHING RECOMMENDATIONS FOR MARCUS CHEN
+======================================================================
+
+Based on your performance analysis, here are key areas to focus on:
+
+1. RACKET SPEED IMPROVEMENT:
+   - Your average racket velocity is 1706.90 px/s vs Daniel's 1870.90 px/s
+   - FOCUS: Increase your follow-through speed by 10%
+   - DRILL: Practice shadow swings with emphasis on acceleration through contact
+   - TIP: Relax your grip slightly to allow faster wrist snap
+
+2. BACKHAND DEVELOPMENT:
+   - You executed 53 backhand shots vs 104 forehand shots (34% vs 66%)
+   - FOCUS: Build confidence in your backhand stroke
+   - DRILL: Spend 40% of practice time on backhand-only drills
+   - TIP: Step into your backhand more aggressively for better weight transfer
+
+3. LEG LOADING & POWER GENERATION:
+   - Your average hip/knee angle is 151.07° (higher = less knee bend)
+   - Daniel's is 165.28°, suggesting different playing styles
+   - FOCUS: Experiment with lower stance for more explosive power
+   - DRILL: Practice shots from ready position with knees at 140-150°
+   - TIP: Use your legs more to generate upward force into the ball
+
+4. ELBOW POSITIONING:
+   - Your average elbow angle is 112.88° (more bent than Daniel's 88.94°)
+   - FOCUS: Work on extending through your strokes for more reach
+   - DRILL: Practice long diagonal shots to develop fuller extension
+   - TIP: Think "reach and snap" rather than "pull and push"
+
+5. CENTER OF GRAVITY CONTROL:
+   - Your CoG movement (18.58 px) is nearly identical to Daniel's (18.63 px)
+   - EXCELLENT: Your balance and body control are matching an experienced player
+   - MAINTAIN: Continue your current footwork patterns
+
+6. SHOT CONSISTENCY:
+   - You're taking 6 more shots per rally than Daniel (157 vs 151)
+   - POSITIVE: Shows good stamina and rally engagement
+   - FOCUS: Work on point-ending power shots when opportunities arise
+   - TIP: Identify 3-ball attack patterns to finish points earlier
+
+PRIORITY TRAINING PLAN (Next 2 Weeks):
+   Day 1-3: Backhand drills (multiball, consistency)
+   Day 4-5: Racket speed work (shadow swings, resistance training)
+   Day 6-7: Match play focusing on aggressive third-ball attacks
+
+Remember Marcus: Small improvements in racket speed and backhand confidence
+will elevate your game significantly. You're already matching Daniel in
+balance and shot volume - now let's add more firepower!
 
 ======================================================================
                         ANALYSIS COMPLETE

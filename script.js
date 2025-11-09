@@ -265,6 +265,67 @@ document.querySelectorAll('.module-card').forEach(card => {
 // Authentication Modals //
 // ==================== //
 
+// Function to update chatbot greeting based on login state
+function updateChatbotGreeting() {
+    const greetingElement = document.getElementById('chatbotGreeting');
+    if (greetingElement) {
+        if (isUserLoggedIn()) {
+            greetingElement.textContent = "Hi! I'm your Match Analysis AI. I can help you understand your table tennis match statistics. Ask me anything about your performance!";
+        } else {
+            greetingElement.textContent = "Hi! I'm PaddleCoach AI. I can help you learn about our platform and features. Sign up or log in to get personalized match analysis!";
+        }
+    }
+}
+
+// Function to clear chatbot conversation
+function clearChatbotConversation() {
+    // Clear conversation history
+    conversationHistory = [];
+    
+    // Clear all messages except the greeting
+    const chatbotMessages = document.getElementById('chatbotMessages');
+    if (chatbotMessages) {
+        // Remove all messages
+        chatbotMessages.innerHTML = '';
+        
+        // Add back the greeting message
+        const greetingDiv = document.createElement('div');
+        greetingDiv.className = 'chatbot-message bot-message';
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+        contentDiv.id = 'chatbotGreeting';
+        greetingDiv.appendChild(contentDiv);
+        chatbotMessages.appendChild(greetingDiv);
+        
+        // Update greeting based on login state
+        updateChatbotGreeting();
+    }
+    
+    // Clear input field
+    const chatbotInput = document.getElementById('chatbotInput');
+    if (chatbotInput) {
+        chatbotInput.value = '';
+    }
+    
+    // Stop any ongoing speech
+    if (typeof stopSpeaking === 'function') {
+        stopSpeaking();
+    }
+    
+    // Turn off microphone if it's on
+    if (isListening && recognition) {
+        try {
+            recognition.stop();
+        } catch (e) {
+            console.warn('Could not stop recognition:', e);
+        }
+        isListening = false;
+        if (typeof updateMicButton === 'function') {
+            updateMicButton();
+        }
+    }
+}
+
 // Function to hide authentication buttons
 function hideAuthButtons() {
     const navButtons = document.querySelector('.nav-buttons');
@@ -422,6 +483,8 @@ function checkLoginState() {
     } else {
         showAuthButtons();
     }
+    // Update chatbot greeting based on login state
+    updateChatbotGreeting();
 }
 
 // Ensure DOM is fully loaded before checking login state
@@ -645,6 +708,9 @@ document.getElementById('loginForm').addEventListener('submit', (e) => {
     // Hide login/signup buttons
     hideAuthButtons();
     
+    // Clear chatbot conversation and update greeting
+    clearChatbotConversation();
+    
     // Close modal and reset form
     loginModal.classList.remove('active');
     document.body.style.overflow = 'auto';
@@ -741,6 +807,9 @@ document.getElementById('verificationForm').addEventListener('submit', (e) => {
         
         // Hide login/signup buttons
         hideAuthButtons();
+        
+        // Clear chatbot conversation and update greeting
+        clearChatbotConversation();
         
         // Close verification modal
         verificationModal.classList.remove('active');
@@ -840,6 +909,9 @@ if (logoutButton) {
         // Show auth buttons again
         showAuthButtons();
         
+        // Clear chatbot conversation and update greeting
+        clearChatbotConversation();
+        
         // Close dropdown
         if (userDropdown) {
             userDropdown.classList.remove('active');
@@ -914,6 +986,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     promptLogin();
                 }
                 // If logged in, let the file input handler take over
+                return;
+            }
+            
+            // Skip the Talk to Coach button as it has its own handler
+            if (button.id === 'talkToCoachBtn') {
                 return;
             }
             
@@ -1078,6 +1155,8 @@ let isSpeaking = false;
 let autoSendTimeout = null;
 let isVoiceInput = false; // Track if input was from voice
 let shouldIgnoreRecognition = false; // Flag to ignore recognition while bot is speaking
+let currentAudio = null; // Store reference to current playing audio
+let manuallyStoppedAudio = false; // Flag to prevent fallback after manual stop
 
 // Initialize Speech Recognition
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -1090,6 +1169,17 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     recognition.onresult = (event) => {
         // Ignore results if bot is currently speaking
         if (shouldIgnoreRecognition || isSpeaking) {
+            // Check if user said "stop" to interrupt the bot
+            let transcript = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                transcript += event.results[i][0].transcript.toLowerCase();
+            }
+            
+            // Only stop if user explicitly says "stop" (not just any speech)
+            if (event.results[event.results.length - 1].isFinal && transcript.trim().includes('stop')) {
+                stopSpeaking();
+            }
+            // Don't update the input field or process the speech
             return;
         }
         
@@ -1143,13 +1233,82 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
 
 // ElevenLabs Configuration
 const ELEVENLABS_API_KEY = 'sk_58b691e7138d0e942b1e096150cc237631742c85f467b86f';
-const ELEVENLABS_VOICE_ID = 'ZIlrSGI4jZqobxRKprJz'; // Custom voice
+const ELEVENLABS_VOICE_ID = 'bPMKpgEe88vKSwusXTMU'; // Selected voice from library
 
 // Initialize Speech Synthesis (fallback)
 const synth = window.speechSynthesis;
 
+// Function to stop speaking immediately
+function stopSpeaking() {
+    console.log('Stopping speech...');
+    
+    // Set flag to prevent fallback
+    manuallyStoppedAudio = true;
+    
+    // Stop the stored audio reference
+    if (currentAudio) {
+        try {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            currentAudio.src = '';
+            currentAudio.remove();
+            currentAudio = null;
+        } catch (e) {
+            console.warn('Error stopping current audio:', e);
+        }
+    }
+    
+    // Stop ElevenLabs audio by ID
+    const existingAudio = document.getElementById('tts-audio');
+    if (existingAudio) {
+        try {
+            existingAudio.pause();
+            existingAudio.currentTime = 0;
+            existingAudio.src = '';
+            existingAudio.remove();
+        } catch (e) {
+            console.warn('Error stopping audio by ID:', e);
+        }
+    }
+    
+    // Also try to find any audio elements without the ID
+    const allAudioElements = document.querySelectorAll('audio');
+    allAudioElements.forEach(audio => {
+        try {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.src = '';
+            audio.remove();
+        } catch (e) {
+            console.warn('Error stopping audio element:', e);
+        }
+    });
+    
+    // Stop browser TTS
+    if (synth.speaking) {
+        synth.cancel();
+    }
+    
+    // Reset flags
+    isSpeaking = false;
+    shouldIgnoreRecognition = false;
+    
+    // Update button
+    updateMicButton();
+    
+    // Clear input
+    if (chatbotInput) {
+        chatbotInput.value = '';
+    }
+    
+    console.log('Speech stopped, flags reset');
+}
+
 // Function to speak text using ElevenLabs
 async function speakText(text) {
+    // Reset the manual stop flag when starting new speech
+    manuallyStoppedAudio = false;
+    
     if (isSpeaking) {
         // Stop any currently playing audio
         const existingAudio = document.getElementById('tts-audio');
@@ -1163,6 +1322,9 @@ async function speakText(text) {
     // Don't stop the recognition, just ignore its results
     shouldIgnoreRecognition = true;
     isSpeaking = true;
+    
+    // Update mic button to show stop icon
+    updateMicButton();
     
     // Clear the input field to prevent it from showing bot's speech
     if (isListening) {
@@ -1202,8 +1364,12 @@ async function speakText(text) {
         const audio = new Audio(audioUrl);
         audio.id = 'tts-audio';
         
+        // Store reference globally so we can stop it
+        currentAudio = audio;
+        
         audio.onended = () => {
             isSpeaking = false;
+            currentAudio = null;
             URL.revokeObjectURL(audioUrl);
             audio.remove();
             
@@ -1211,20 +1377,28 @@ async function speakText(text) {
             setTimeout(() => {
                 shouldIgnoreRecognition = false;
                 chatbotInput.value = ''; // Clear any captured bot speech
+                updateMicButton();
             }, 1000);
         };
         
         audio.onerror = () => {
             isSpeaking = false;
+            currentAudio = null;
             console.error('Audio playback error');
             
             setTimeout(() => {
                 shouldIgnoreRecognition = false;
                 chatbotInput.value = '';
+                updateMicButton();
             }, 1000);
             
-            // Fallback to browser TTS
-            speakTextFallback(text);
+            // Only fallback if not manually stopped
+            if (!manuallyStoppedAudio) {
+                console.log('Audio error - falling back to browser TTS');
+                speakTextFallback(text);
+            } else {
+                console.log('Audio manually stopped - not falling back');
+            }
         };
         
         await audio.play();
@@ -1232,14 +1406,21 @@ async function speakText(text) {
     } catch (error) {
         console.error('ElevenLabs TTS error:', error);
         isSpeaking = false;
+        currentAudio = null;
         
         setTimeout(() => {
             shouldIgnoreRecognition = false;
             chatbotInput.value = '';
+            updateMicButton();
         }, 1000);
         
-        // Fallback to browser TTS
-        speakTextFallback(text);
+        // Only fallback if not manually stopped
+        if (!manuallyStoppedAudio) {
+            console.log('ElevenLabs error - falling back to browser TTS');
+            speakTextFallback(text);
+        } else {
+            console.log('Audio manually stopped - not falling back');
+        }
     }
 }
 
@@ -1248,6 +1429,9 @@ function speakTextFallback(text) {
     // Set flag to ignore speech recognition while bot is speaking
     shouldIgnoreRecognition = true;
     isSpeaking = true;
+    
+    // Update mic button to show stop icon
+    updateMicButton();
     
     // Clear the input field to prevent it from showing bot's speech
     if (isListening) {
@@ -1277,6 +1461,7 @@ function speakTextFallback(text) {
     utterance.onstart = () => {
         isSpeaking = true;
         shouldIgnoreRecognition = true;
+        updateMicButton();
     };
     
     utterance.onend = () => {
@@ -1286,6 +1471,7 @@ function speakTextFallback(text) {
         setTimeout(() => {
             shouldIgnoreRecognition = false;
             chatbotInput.value = ''; // Clear any captured bot speech
+            updateMicButton();
         }, 1000);
     };
     
@@ -1299,6 +1485,13 @@ function toggleVoiceInput() {
         return;
     }
     
+    // If bot is speaking, stop it
+    if (isSpeaking) {
+        stopSpeaking();
+        return;
+    }
+    
+    // Otherwise toggle listening
     if (isListening) {
         recognition.stop();
         isListening = false;
@@ -1313,11 +1506,17 @@ function toggleVoiceInput() {
 function updateMicButton() {
     const micButton = document.getElementById('micButton');
     if (micButton) {
-        if (isListening) {
+        if (isSpeaking) {
+            // Show stop/circle icon when bot is speaking
+            micButton.classList.add('speaking');
+            micButton.classList.remove('listening');
+            micButton.innerHTML = '<i class="fas fa-stop-circle"></i>';
+        } else if (isListening) {
             micButton.classList.add('listening');
+            micButton.classList.remove('speaking');
             micButton.innerHTML = '<i class="fas fa-microphone-slash"></i>';
         } else {
-            micButton.classList.remove('listening');
+            micButton.classList.remove('listening', 'speaking');
             micButton.innerHTML = '<i class="fas fa-microphone"></i>';
         }
     }
@@ -1328,7 +1527,25 @@ if (chatbotToggle) {
     chatbotToggle.addEventListener('click', () => {
         chatbot.classList.toggle('active');
         if (chatbot.classList.contains('active')) {
+            // Update greeting based on login state when opening
+            updateChatbotGreeting();
             chatbotInput.focus();
+        }
+    });
+}
+
+// Handle "Talk to Coach" button click
+const talkToCoachBtn = document.getElementById('talkToCoachBtn');
+if (talkToCoachBtn) {
+    talkToCoachBtn.addEventListener('click', () => {
+        // Open the chatbot
+        if (chatbot) {
+            chatbot.classList.add('active');
+            // Update greeting based on login state when opening
+            updateChatbotGreeting();
+            if (chatbotInput) {
+                chatbotInput.focus();
+            }
         }
     });
 }
@@ -1336,20 +1553,36 @@ if (chatbotToggle) {
 // Close chatbot
 if (chatbotClose) {
     chatbotClose.addEventListener('click', () => {
+        // Close the chatbot
         chatbot.classList.remove('active');
-        // Stop any ongoing speech
-        const existingAudio = document.getElementById('tts-audio');
-        if (existingAudio) {
-            existingAudio.pause();
-            existingAudio.remove();
-        }
-        if (synth.speaking) {
-            synth.cancel();
-        }
+        
+        // Stop any ongoing speech immediately
+        stopSpeaking();
+        
+        // Turn off microphone if it's on
         if (isListening && recognition) {
-            recognition.stop();
+            try {
+                recognition.stop();
+            } catch (e) {
+                console.warn('Could not stop recognition:', e);
+            }
             isListening = false;
         }
+        
+        // Clear any auto-send timeout
+        if (autoSendTimeout) {
+            clearTimeout(autoSendTimeout);
+            autoSendTimeout = null;
+        }
+        
+        // Clear input field
+        chatbotInput.value = '';
+        
+        // Reset voice input flag
+        isVoiceInput = false;
+        
+        // Update mic button to default state
+        updateMicButton();
     });
 }
 
@@ -1450,20 +1683,52 @@ async function getGeminiResponse(userMessage) {
         parts: [{ text: userMessage }]
     });
 
-    const requestBody = {
-        systemInstruction: {
-            parts: [{
-                text: `You are a table tennis coach AI analyzing a specific match. Here is the match data you have access to:
+    // Check if user is logged in
+    const userLoggedIn = isUserLoggedIn();
+    
+    // Create different system instructions based on login state
+    let systemInstructionText;
+    
+    if (userLoggedIn) {
+        // Logged in - provide personalized coaching with match data
+        systemInstructionText = `You are a table tennis coach AI analyzing a specific match. Here is the match data you have access to:
 
 ${matchAnalysisData}
 
 CRITICAL INSTRUCTIONS:
 - When the user mentions "the match", "my match", or asks about match statistics, they are ALWAYS referring to the table tennis match data above
-- This is a table tennis match between Player 1 and Player 2
+- This is a table tennis match between Marcus Chen (the user, referred to as "you") and Daniel Rodriguez (the opponent)
+- When discussing Player 1 or Marcus Chen, use "you" or "your" (e.g., "your average racket velocity", "you executed 157 shots")
+- When discussing Player 2, always use the name "Daniel Rodriguez" (e.g., "Daniel Rodriguez had 9.6% faster racket speed", "Daniel executed 151 shots")
+- Never say "Player 1" or "Player 2" - always use "you/your" for Marcus Chen and "Daniel Rodriguez" for the opponent
 - Provide specific stats from this data when asked about the match
-- Be conversational and helpful
+- Be conversational and helpful like a real coach
 - Give concise answers (2-3 sentences) unless asked for more detail
-- Focus on actionable insights`
+- Focus on actionable insights and training recommendations
+- When giving advice, speak directly to the user as their coach (e.g., "You should focus on...", "I recommend you work on...")`;
+    } else {
+        // Not logged in - focus on getting user to sign up/login
+        systemInstructionText = `You are PaddleCoach AI, a friendly assistant for a table tennis coaching platform.
+
+CRITICAL INSTRUCTIONS:
+- The user is NOT logged in, so you do NOT have access to their match data or statistics
+- DO NOT provide any personalized analysis, player names, or specific match statistics
+- DO NOT mention Marcus Chen, Daniel Rodriguez, or any player-specific information
+- Your main goal is to help users understand the platform and encourage them to sign up or log in
+- Be friendly, helpful, and enthusiastic about the platform's features
+- When asked about matches, stats, or personal performance, politely explain they need to log in first
+- Highlight benefits of signing up: AI-powered match analysis, personalized coaching, shot detection, biomechanical analysis
+- Keep responses concise (2-3 sentences) and welcoming
+- Example responses:
+  * "I'd love to help you analyze your game! To access personalized match analysis and statistics, please sign up or log in first."
+  * "PaddleCoach uses AI to track your shots, analyze your technique, and provide coaching insights. Create an account to get started!"
+  * "Once you're logged in, I can provide detailed analysis of your matches, including shot counts, racket speed, and personalized training recommendations."`;
+    }
+
+    const requestBody = {
+        systemInstruction: {
+            parts: [{
+                text: systemInstructionText
             }]
         },
         contents: conversationHistory,
