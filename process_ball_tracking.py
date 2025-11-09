@@ -1,14 +1,14 @@
 """
-Ball tracking processor for table tennis.
-Tracks the ball using YOLOv11n model.
-Outputs: annotated video + JSON file with ball trajectory.
+Real-time ball tracking for table tennis using camera.
+Tracks the ball using YOLOv11n model through live camera feed.
+Outputs: Real-time visualization + recorded video (no JSON output).
 """
 from pathlib import Path
 import sys
 import cv2
-import json
-from typing import List, Dict
+from typing import List, Dict, Optional
 import time
+from datetime import datetime
 
 # Add src to path
 sys.path.append(str(Path(__file__).parent / "src"))
@@ -17,24 +17,20 @@ from vision.ball_tracker import BallTracker
 from models.ball_data import BallData
 
 
-class BallTrackingProcessor:
-    """Process video for ball tracking and generate outputs."""
+class RealtimeBallTracker:
+    """Real-time ball tracking using camera feed."""
     
-    def __init__(self, video_path: str, output_dir: str = "output"):
+    def __init__(self, camera_id: int = 0, output_dir: str = "output_ballTracking"):
         """
-        Initialize ball tracking processor.
+        Initialize real-time ball tracker.
         
         Args:
-            video_path: Path to input video
-            output_dir: Directory for output files
+            camera_id: Camera device ID (0 for default camera)
+            output_dir: Directory for output files (default: output_ballTracking)
         """
-        self.video_path = Path(video_path)
+        self.camera_id = camera_id
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(exist_ok=True)
-        
-        # Validate video exists
-        if not self.video_path.exists():
-            raise FileNotFoundError(f"Video file not found: {video_path}")
         
         # Initialize ball tracker with YOLOv11n
         # Use absolute path to model file
@@ -56,211 +52,178 @@ class BallTrackingProcessor:
         # Storage for ball data
         self.ball_detections: List[BallData] = []
         
-    def process_video(self, 
-                     visualize: bool = True,
-                     save_video: bool = True,
-                     max_frames: int = None,
-                     skip_frames: int = 1) -> Dict:
+        # Session info
+        self.session_start = None
+        
+    def start_tracking(self, save_video: bool = False) -> Dict:
         """
-        Process video and track ball.
+        Start real-time ball tracking from camera.
         
         Args:
-            visualize: Show real-time visualization
-            save_video: Save annotated video
-            max_frames: Maximum frames to process (None = all)
-            skip_frames: Process every Nth frame (1 = all frames)
+            save_video: Save recorded session to video file
             
         Returns:
-            Dictionary with processing statistics
+            Dictionary with session statistics
         """
-        cap = cv2.VideoCapture(str(self.video_path))
+        # Open camera
+        cap = cv2.VideoCapture(self.camera_id)
         
-        # Get video properties
-        fps = int(cap.get(cv2.CAP_PROP_FPS))
+        if not cap.isOpened():
+            raise RuntimeError(f"Cannot open camera {self.camera_id}")
+        
+        # Get camera properties
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        duration = total_frames / fps
+        fps = int(cap.get(cv2.CAP_PROP_FPS)) or 30  # Default to 30 if not available
         
         print("\n" + "="*60)
-        print("🏓 Ball Tracking Started")
+        print("🏓 Real-Time Ball Tracking Started")
         print("="*60)
-        print(f"Video: {self.video_path.name}")
+        print(f"Camera ID: {self.camera_id}")
         print(f"Resolution: {width}x{height}")
         print(f"FPS: {fps}")
-        print(f"Duration: {duration:.2f}s ({total_frames} frames)")
-        print(f"Model: YOLOv11n (default)")
+        print(f"Model: YOLOv11n (sports ball detection)")
+        print("-"*60)
+        print("\nControls:")
+        print("  'q' - Quit and save session")
+        print("  'p' - Pause/Resume tracking")
+        print("  'r' - Reset trajectory")
         print("-"*60)
         
-        # Video writer for annotated output
+        # Video writer for recorded session
         writer = None
         if save_video:
-            output_video_path = self.output_dir / f"{self.video_path.stem}_ball_tracked.mp4"
+            timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+            output_video_path = self.output_dir / f"camera_session_{timestamp_str}.mp4"
             fourcc = cv2.VideoWriter_fourcc(*'mp4v')
             writer = cv2.VideoWriter(str(output_video_path), fourcc, fps, (width, height))
-            print(f"Saving to: {output_video_path}")
+            print(f"📹 Recording to: {output_video_path}")
         
-        # Processing stats
+        # Session stats
         frame_count = 0
-        processed_count = 0
         detections_count = 0
         start_time = time.time()
+        self.session_start = datetime.now()
         paused = False
+        
+        print("\n🎥 Camera feed active - tracking started!")
         
         while True:
             if not paused:
                 ret, frame = cap.read()
                 if not ret:
-                    break
-                
-                # Check max frames limit
-                if max_frames is not None and frame_count >= max_frames:
-                    print(f"\nReached max frames limit: {max_frames}")
+                    print("\n⚠️ Failed to read from camera")
                     break
                 
                 # Calculate timestamp
-                timestamp = frame_count / fps
+                timestamp = time.time() - start_time
                 
-                # Process frame (with frame skipping)
-                ball_data = None
-                if frame_count % skip_frames == 0:
-                    ball_data = self.tracker.process_frame(frame, frame_count, timestamp)
-                    processed_count += 1
-                    
-                    if ball_data is not None:
-                        self.ball_detections.append(ball_data)
-                        detections_count += 1
+                # Process frame for ball detection
+                ball_data = self.tracker.process_frame(frame, frame_count, timestamp)
                 
-                # Visualize
+                if ball_data is not None:
+                    self.ball_detections.append(ball_data)
+                    detections_count += 1
+                
+                # Visualize with ball tracking
                 annotated_frame = self.tracker.visualize_ball(frame, ball_data)
                 
                 # Add info overlay
-                self._add_info_overlay(annotated_frame, frame_count, total_frames, 
-                                      detections_count, processed_count, ball_data)
+                self._add_realtime_overlay(annotated_frame, frame_count, 
+                                           detections_count, start_time, ball_data)
                 
-                # Save to video
+                # Save to video if recording
                 if writer is not None:
                     writer.write(annotated_frame)
                 
-                # Show visualization
-                if visualize:
-                    cv2.imshow('Ball Tracking', annotated_frame)
+                # Show live feed
+                cv2.imshow('Real-Time Ball Tracking', annotated_frame)
                 
                 frame_count += 1
-                
-                # Progress update every 30 frames
-                if frame_count % 30 == 0:
-                    elapsed = time.time() - start_time
-                    fps_actual = frame_count / elapsed if elapsed > 0 else 0
-                    progress = (frame_count / total_frames) * 100
-                    print(f"\rProgress: {progress:.1f}% | Frame: {frame_count}/{total_frames} | "
-                          f"FPS: {fps_actual:.1f} | Detections: {detections_count}", end="")
             
             # Handle keyboard input
-            if visualize:
-                key = cv2.waitKey(1) & 0xFF
-                if key == ord('q'):
-                    print("\n\nQuitting early...")
-                    break
-                elif key == ord('p'):
-                    paused = not paused
-                    print(f"\n{'PAUSED' if paused else 'RESUMED'}")
-                elif key == ord(' '):
-                    visualize = not visualize
-                    if not visualize:
-                        cv2.destroyAllWindows()
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q'):
+                print("\n\n🛑 Stopping tracking session...")
+                break
+            elif key == ord('p'):
+                paused = not paused
+                status = "⏸️  PAUSED" if paused else "▶️  RESUMED"
+                print(f"\n{status}")
+            elif key == ord('r'):
+                self.ball_detections.clear()
+                self.tracker.reset_trajectory()
+                detections_count = 0
+                print("\n� Trajectory reset")
         
         # Cleanup
         cap.release()
         if writer is not None:
             writer.release()
-        if visualize:
-            cv2.destroyAllWindows()
+        cv2.destroyAllWindows()
         
         # Calculate statistics
         elapsed_time = time.time() - start_time
         processing_fps = frame_count / elapsed_time if elapsed_time > 0 else 0
-        detection_rate = (detections_count / processed_count * 100) if processed_count > 0 else 0
+        detection_rate = (detections_count / frame_count * 100) if frame_count > 0 else 0
         
         stats = {
             'total_frames': frame_count,
-            'processed_frames': processed_count,
             'detections': detections_count,
             'detection_rate': detection_rate,
-            'processing_time': elapsed_time,
+            'session_duration': elapsed_time,
             'processing_fps': processing_fps,
-            'video_fps': fps,
-            'duration': duration,
-            'resolution': f"{width}x{height}"
+            'camera_fps': fps,
+            'resolution': f"{width}x{height}",
+            'session_start': self.session_start.strftime("%Y-%m-%d %H:%M:%S") if self.session_start else None
         }
         
         print("\n\n" + "="*60)
-        print("✅ Processing Complete!")
+        print("✅ Tracking Session Complete!")
         print("="*60)
         
         return stats
     
-    def _add_info_overlay(self, frame, frame_num, total_frames, detections, processed, ball_data):
-        """Add information overlay to frame."""
+    def _add_realtime_overlay(self, frame, frame_num, detections, start_time, ball_data):
+        """Add real-time information overlay to frame."""
         h, w = frame.shape[:2]
         
         # Semi-transparent overlay at top
         overlay = frame.copy()
-        cv2.rectangle(overlay, (0, 0), (w, 120), (0, 0, 0), -1)
+        cv2.rectangle(overlay, (0, 0), (w, 140), (0, 0, 0), -1)
         cv2.addWeighted(overlay, 0.6, frame, 0.4, 0, frame)
         
-        # Frame info
-        cv2.putText(frame, f"Frame: {frame_num}/{total_frames}", (10, 25),
+        # Session duration
+        elapsed = time.time() - start_time
+        minutes = int(elapsed // 60)
+        seconds = int(elapsed % 60)
+        cv2.putText(frame, f"Session Time: {minutes:02d}:{seconds:02d}", (10, 25),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
         
-        # Detection info
-        status = "DETECTED" if ball_data is not None else "NO BALL"
-        color = (0, 255, 0) if ball_data is not None else (0, 0, 255)
-        cv2.putText(frame, f"Status: {status}", (10, 55),
+        # Frame count
+        cv2.putText(frame, f"Frames: {frame_num}", (10, 55),
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+        
+        # Detection status
+        status = "🎾 BALL DETECTED" if ball_data is not None else "⚪ NO BALL"
+        color = (0, 255, 0) if ball_data is not None else (0, 165, 255)
+        cv2.putText(frame, status, (10, 85),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
         
-        # Stats
-        cv2.putText(frame, f"Detections: {detections}/{processed}", (10, 85),
+        # Detection count
+        detection_rate = (detections / frame_num * 100) if frame_num > 0 else 0
+        cv2.putText(frame, f"Detections: {detections} ({detection_rate:.1f}%)", (10, 115),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
         
         # Ball info if detected
         if ball_data is not None:
-            info_text = f"Pos: ({ball_data.x:.0f}, {ball_data.y:.0f}) | Conf: {ball_data.confidence:.2f}"
+            info_text = f"Pos: ({ball_data.x:.0f}, {ball_data.y:.0f})"
             if ball_data.speed is not None:
                 info_text += f" | Speed: {ball_data.speed:.0f} px/s"
-            cv2.putText(frame, info_text, (10, 115),
+            info_text += f" | Conf: {ball_data.confidence:.2f}"
+            cv2.putText(frame, info_text, (w - 550, 25),
                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
     
-    def save_json(self) -> Path:
-        """
-        Save ball tracking data to JSON file.
-        
-        Returns:
-            Path to saved JSON file
-        """
-        output_path = self.output_dir / f"{self.video_path.stem}_ball_data.json"
-        
-        # Build JSON structure
-        data = {
-            "metadata": {
-                "video_file": self.video_path.name,
-                "model": "yolov11n.pt",
-                "tracking_target": "sports_ball",
-                "total_detections": len(self.ball_detections),
-                "processed_at": time.strftime("%Y-%m-%d %H:%M:%S")
-            },
-            "trajectory": [ball.to_dict() for ball in self.ball_detections]
-        }
-        
-        # Save with pretty formatting
-        with open(output_path, 'w') as f:
-            json.dump(data, f, indent=2)
-        
-        print(f"\n📄 Ball tracking JSON saved: {output_path}")
-        print(f"   Total detections: {len(self.ball_detections)}")
-        print(f"   File size: {output_path.stat().st_size / 1024:.1f} KB")
-        
-        return output_path
     
     def get_statistics(self) -> Dict:
         """Get detailed statistics about ball tracking."""
@@ -291,63 +254,46 @@ class BallTrackingProcessor:
 
 
 def main():
-    """Main execution function."""
+    """Main execution function for real-time ball tracking."""
     # Configuration
-    video_path = "IMG_7622.mp4"
-    output_dir = "output"
-    
-    # Check if video exists
-    if not Path(video_path).exists():
-        print(f"❌ Error: Video file '{video_path}' not found!")
-        print("Please make sure IMG_7622.mp4 is in the project root directory.")
-        return
+    camera_id = 0  # Default camera
+    output_dir = "output_ballTracking"
+    save_recording = False  # Set to True to save video recording
     
     print("="*60)
-    print("🏓 PaddleCoach - Ball Tracking System")
-    print("   Using YOLOv11n (default object detection)")
+    print("🏓 PaddleCoach - Real-Time Ball Tracking")
+    print("   Using Camera Feed + YOLOv11n")
     print("="*60)
     print("\nThis will:")
-    print("  ✅ Track sports ball using YOLOv11n model")
-    print("  ✅ Auto-download model if not present")
-    print("  ✅ Generate ball trajectory visualization")
-    print("  ✅ Calculate ball speed and velocity")
-    print("  ✅ Save annotated video")
-    print("  ✅ Generate JSON file with ball positions")
+    print("  ✅ Open your camera for live ball tracking")
+    print("  ✅ Track sports ball in real-time using YOLOv11n")
+    print("  ✅ Display ball trajectory and speed")
+    print("  ✅ Optional: Record session to video (no JSON output)")
     print("\nControls:")
-    print("  'p' - Pause/Resume")
-    print("  'q' - Quit early")
-    print("  SPACE - Toggle visualization")
+    print("  'q' - Quit and save session")
+    print("  'p' - Pause/Resume tracking")
+    print("  'r' - Reset trajectory")
     print("-"*60)
     
     try:
-        # Create processor
-        processor = BallTrackingProcessor(video_path, output_dir)
+        # Create real-time tracker
+        tracker = RealtimeBallTracker(camera_id=camera_id, output_dir=output_dir)
         
-        # Process video
-        stats = processor.process_video(
-            visualize=True,
-            save_video=True,
-            max_frames=None,  # Process all frames
-            skip_frames=1     # Process every frame
-        )
-        
-        # Save JSON
-        json_path = processor.save_json()
+        # Start tracking session
+        stats = tracker.start_tracking(save_video=save_recording)
         
         # Get detailed statistics
-        detailed_stats = processor.get_statistics()
+        detailed_stats = tracker.get_statistics()
         
-        # Print summary
+        # Print session summary
         print("\n" + "="*60)
-        print("📊 Performance Summary")
+        print("📊 Session Summary")
         print("="*60)
+        print(f"Session duration: {stats['session_duration']:.1f}s")
         print(f"Total frames: {stats['total_frames']}")
-        print(f"Processed frames: {stats['processed_frames']}")
         print(f"Ball detections: {stats['detections']}")
         print(f"Detection rate: {stats['detection_rate']:.1f}%")
-        print(f"Processing time: {stats['processing_time']:.1f}s")
         print(f"Processing FPS: {stats['processing_fps']:.1f}")
-        print(f"Video FPS: {stats['video_fps']}")
         
         if detailed_stats:
             print("\n" + "="*60)
@@ -365,28 +311,28 @@ def main():
                 print(f"  Max speed: {detailed_stats['speed']['max']:.1f} px/s")
         
         print("\n" + "="*60)
-        print("📁 Output Files")
+        print("📁 Session Files")
         print("="*60)
-        print(f"📹 Annotated video: {output_dir}/{video_path.replace('.mp4', '_ball_tracked.mp4')}")
-        print(f"📄 JSON data: {json_path}")
+        if save_recording:
+            print(f"� Video recording: output_ballTracking/camera_session_*.mp4")
+        else:
+            print("No files saved (video recording was disabled)")
         
         print("\n" + "="*60)
         print("🚀 Next Steps")
         print("="*60)
-        print("The JSON file contains:")
-        print("  • Frame-by-frame ball positions (x, y)")
-        print("  • Detection confidence scores")
-        print("  • Ball velocity and speed")
-        print("  • Timestamps for event correlation")
-        print("\nThis data can be used for:")
-        print("  🎯 Shot detection and classification")
-        print("  📊 Rally analysis")
-        print("  🏓 Ball trajectory prediction")
-        print("  💡 Integration with pose data for complete analysis")
+        print("The tracking session can be used for:")
+        print("  🎯 Shot analysis and classification")
+        print("  📊 Rally pattern recognition")
+        print("  🏓 Ball trajectory analysis")
+        print("  💡 Integration with pose tracking for complete match analysis")
+        print("  📹 Enable save_recording=True to save video output")
         print("="*60)
         
+    except KeyboardInterrupt:
+        print("\n\n⚠️ Session interrupted by user")
     except Exception as e:
-        print(f"\n❌ Error during processing: {e}")
+        print(f"\n❌ Error during tracking: {e}")
         import traceback
         traceback.print_exc()
 

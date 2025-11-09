@@ -38,11 +38,12 @@ class BallTracker:
         self.trajectory: Deque[Tuple[int, int]] = deque(maxlen=max_trajectory)
         self.max_trajectory = max_trajectory
         
-        # Minimum confidence threshold
-        self.min_confidence = 0.05  # Very low threshold for difficult ball detection
+        # Minimum confidence threshold (very low for difficult table tennis ball detection)
+        self.min_confidence = 0.01  # Ultra-low threshold for small, fast-moving table tennis balls
         
-        # Target class name to detect (COCO class for sports balls)
-        self.target_class = "sports ball"  # Default COCO class for all sports balls
+        # Target class names to detect (flexible matching for different models)
+        # Accept: "sports ball" (COCO), "ball", "Ball", or any class with "ball" in name
+        self.target_classes = ["sports ball", "ball", "Ball"]  # Multiple possible class names
         
         # Ball color for visualization (orange: #fa8b32)
         self.ball_color = (50, 139, 250)  # BGR format
@@ -74,25 +75,30 @@ class BallTracker:
         
         result = results[0]
         
-        # Get the detection with highest confidence that matches "ball" class
+        # Get the detection with highest confidence that matches ball classes
         best_detection = None
         best_conf = 0
         
         for box in result.boxes:
             conf = float(box.conf[0])
             
-            # Check if this detection is for "ball" class
+            # Check if this detection is for any ball-related class
             class_id = int(box.cls[0])
             class_name = self.model.names[class_id]
             
-            # Debug: print all detections occasionally (every 100 frames)
-            if frame_number % 100 == 0:
-                print(f"\nFrame {frame_number}: Detected '{class_name}' with confidence {conf:.3f}")
+            # Debug: print all detections for first 10 frames and then occasionally
+            if frame_number < 10 or frame_number % 100 == 0:
+                print(f"Frame {frame_number}: Detected '{class_name}' (class_id={class_id}) with conf={conf:.3f}")
             
-            # Only consider detections of class "Ball" (exact match)
-            if class_name == self.target_class and conf > best_conf:
+            # Check if class name matches any of our target classes or contains "ball"
+            is_ball = (class_name in self.target_classes or 
+                      "ball" in class_name.lower())
+            
+            if is_ball and conf > best_conf:
                 best_conf = conf
                 best_detection = box
+                if frame_number < 10:
+                    print(f"  ✅ Selected as best ball detection!")
         
         if best_detection is None:
             return None

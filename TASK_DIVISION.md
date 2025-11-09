@@ -1,5 +1,28 @@
 # PaddleCoach - Task Division & Collaboration Strategy
 
+## 🚨 LATEST UPDATES (Ball Tracking Fixes)
+
+### Ball Tracking System - Fixed Issues ✅
+**Date**: January 2025  
+**Status**: Real-time ball tracking operational with improved detection
+
+**What Changed:**
+1. **Ball Detection Fixed**:
+   - Flexible class matching: accepts "sports ball", "ball", "Ball", or any class with "ball" in name
+   - Lowered confidence threshold to 0.01 for small table tennis balls
+   - Enhanced debug output for first 10 frames + periodic logging
+
+2. **JSON Output Removed**:
+   - No more JSON files saved in `output_ballTracking/`
+   - Only video output when `save_recording=True`
+   - Cleaner directory structure for frontend integration
+
+**Key Files Modified:**
+- `/src/vision/ball_tracker.py` - Flexible detection + lower threshold
+- `/process_ball_tracking.py` - Removed all JSON logic, video-only output
+
+---
+
 ## Team Members
 - **Ashwani**
 - **Mohnish**
