@@ -921,29 +921,199 @@ if (logoutButton) {
     });
 }
 
-// Handle Upload Match Video button
+// Handle Upload Match Video button - Open Modal
 const uploadMatchVideoBtn = document.getElementById('uploadMatchVideoBtn');
-const matchVideoInput = document.getElementById('matchVideoInput');
+const uploadVideoModal = document.getElementById('uploadVideoModal');
+const closeUploadModal = document.getElementById('closeUploadModal');
+const uploadProfessionalVideo = document.getElementById('uploadProfessionalVideo');
+const uploadYourMatchVideo = document.getElementById('uploadYourMatchVideo');
+const professionalVideoInput = document.getElementById('professionalVideoInput');
+const yourMatchVideoInput = document.getElementById('yourMatchVideoInput');
 
-if (uploadMatchVideoBtn && matchVideoInput) {
+// Store selected video files temporarily
+let selectedProfessionalVideo = null;
+let selectedYourVideo = null;
+
+if (uploadMatchVideoBtn && uploadVideoModal) {
+    // Open modal when clicking Upload Match Video button
     uploadMatchVideoBtn.addEventListener('click', () => {
-        matchVideoInput.click();
+        uploadVideoModal.classList.add('active');
     });
     
-    matchVideoInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            console.log('Selected file:', file.name);
-            console.log('File size:', (file.size / (1024 * 1024)).toFixed(2), 'MB');
-            console.log('File type:', file.type);
-            
-            // Show confirmation to user
-            alert(`Video selected: ${file.name}\nSize: ${(file.size / (1024 * 1024)).toFixed(2)} MB\n\nVideo upload functionality will be implemented when backend is ready.`);
-            
-            // TODO: Implement actual upload to backend when available
-            // Example: uploadVideoToBackend(file);
+    // Close modal
+    if (closeUploadModal) {
+        closeUploadModal.addEventListener('click', () => {
+            uploadVideoModal.classList.remove('active');
+        });
+    }
+    
+    // Close modal when clicking outside
+    uploadVideoModal.addEventListener('click', (e) => {
+        if (e.target === uploadVideoModal) {
+            uploadVideoModal.classList.remove('active');
         }
     });
+    
+    // Handle Professional Video Upload
+    if (uploadProfessionalVideo && professionalVideoInput) {
+        uploadProfessionalVideo.addEventListener('click', () => {
+            professionalVideoInput.click();
+        });
+        
+        professionalVideoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                console.log('Professional video selected:', file.name);
+                selectedProfessionalVideo = file;
+                
+                // Show upload progress
+                showUploadProgress('professional', file);
+                
+                // Check if both videos are selected
+                checkAndProcessVideos();
+            }
+        });
+    }
+    
+    // Handle Your Match Video Upload
+    if (uploadYourMatchVideo && yourMatchVideoInput) {
+        uploadYourMatchVideo.addEventListener('click', () => {
+            yourMatchVideoInput.click();
+        });
+        
+        yourMatchVideoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                console.log('Your match video selected:', file.name);
+                selectedYourVideo = file;
+                
+                // Show upload progress
+                showUploadProgress('your', file);
+                
+                // Check if both videos are selected
+                checkAndProcessVideos();
+            }
+        });
+    }
+}
+
+// Show upload progress for selected videos
+function showUploadProgress(type, file) {
+    const card = type === 'professional' ? uploadProfessionalVideo : uploadYourMatchVideo;
+    const fileName = file.name;
+    const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+    
+    // Add uploaded class to card
+    card.classList.add('uploaded');
+    
+    // Update card content to show upload status
+    const cardContent = card.innerHTML;
+    card.innerHTML = `
+        <div class="upload-option-icon" style="background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);">
+            <i class="fas fa-check"></i>
+        </div>
+        <h3>${type === 'professional' ? 'Original Video' : 'Analyzed Video'} Uploaded</h3>
+        <p><strong>${fileName}</strong></p>
+        <p style="font-size: 0.85rem; color: #64748B;">${fileSize} MB</p>
+        <div class="upload-progress-bar">
+            <div class="upload-progress-fill"></div>
+        </div>
+    `;
+    
+    // Simulate upload progress animation
+    const progressFill = card.querySelector('.upload-progress-fill');
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += 10;
+        if (progressFill) {
+            progressFill.style.width = progress + '%';
+        }
+        if (progress >= 100) {
+            clearInterval(interval);
+        }
+    }, 50);
+}
+
+// IndexedDB helper functions for storing video files
+function saveVideoToIndexedDB(name, file) {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open('VideoDatabase', 1);
+        
+        request.onerror = () => reject(request.error);
+        
+        request.onsuccess = () => {
+            const db = request.result;
+            const transaction = db.transaction(['videos'], 'readwrite');
+            const store = transaction.objectStore('videos');
+            const putRequest = store.put({ name: name, file: file });
+            
+            putRequest.onsuccess = () => {
+                console.log(`✓ ${name} saved to IndexedDB`);
+                resolve();
+            };
+            putRequest.onerror = () => reject(putRequest.error);
+        };
+        
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('videos')) {
+                db.createObjectStore('videos', { keyPath: 'name' });
+            }
+        };
+    });
+}
+
+// Check if both videos are selected and redirect to comparison page
+function checkAndProcessVideos() {
+    if (selectedProfessionalVideo && selectedYourVideo) {
+        // Wait for upload animations to complete
+        setTimeout(async () => {
+            // Show confirmation message
+            const proceed = confirm(`Both videos uploaded successfully!\n\n📹 Original Video: ${selectedProfessionalVideo.name}\n📹 Analyzed Video: ${selectedYourVideo.name}\n\nClick OK to view side-by-side comparison.`);
+            
+            if (proceed) {
+                // Show loading message
+                const loadingMsg = document.createElement('div');
+                loadingMsg.id = 'videoLoadingMsg';
+                loadingMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 10002; text-align: center;';
+                loadingMsg.innerHTML = '<div style="font-size: 1.5rem; font-weight: 700; color: #7C3AED; margin-bottom: 1rem;">Preparing Videos...</div><div style="color: #64748B;">Saving videos for comparison...</div>';
+                document.body.appendChild(loadingMsg);
+                
+                // Close modal
+                uploadVideoModal.classList.remove('active');
+                
+                console.log('Preparing videos for comparison...');
+                console.log('Original video size:', (selectedProfessionalVideo.size / (1024 * 1024)).toFixed(2), 'MB');
+                console.log('Analyzed video size:', (selectedYourVideo.size / (1024 * 1024)).toFixed(2), 'MB');
+                
+                try {
+                    // Store video file metadata
+                    sessionStorage.setItem('professionalVideoName', selectedProfessionalVideo.name);
+                    sessionStorage.setItem('yourVideoName', selectedYourVideo.name);
+                    sessionStorage.setItem('professionalVideoType', selectedProfessionalVideo.type);
+                    sessionStorage.setItem('yourVideoType', selectedYourVideo.type);
+                    sessionStorage.setItem('videosReady', 'true');
+                    
+                    // Save files to IndexedDB
+                    await saveVideoToIndexedDB('professional', selectedProfessionalVideo);
+                    await saveVideoToIndexedDB('your', selectedYourVideo);
+                    
+                    console.log('✓ Both videos saved, redirecting...');
+                    
+                    // Redirect to comparison page
+                    setTimeout(() => {
+                        window.location.href = 'video-comparison.html';
+                    }, 500);
+                    
+                } catch (error) {
+                    console.error('Error saving videos:', error);
+                    alert('Error preparing videos for analysis. Please try again.');
+                    const msg = document.getElementById('videoLoadingMsg');
+                    if (msg) document.body.removeChild(msg);
+                }
+            }
+        }, 600); // Wait for progress bar animation
+    }
 }
 
 // Function to check if user is logged in
@@ -984,8 +1154,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     e.preventDefault();
                     e.stopPropagation();
                     promptLogin();
+                    return;
                 }
-                // If logged in, let the file input handler take over
+                // If logged in, the modal handler above will take over
                 return;
             }
             

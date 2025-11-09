@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Comparison - PaddleCoach</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="video-comparison.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Processing Overlay -->
+    <div id="processingOverlay" class="processing-overlay active">
+        <div class="processing-content">
+            <div class="processing-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <h1 class="processing-title">AI Analysis in Progress</h1>
+            <p class="processing-description">Our AI is analyzing both videos to provide you with detailed insights</p>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">0%</div>
+            </div>
+            
+            <div class="processing-steps">
+                <div class="processing-step active" id="step1">
+                    <i class="fas fa-upload"></i>
+                    <span>Uploading Videos</span>
+                </div>
+                <div class="processing-step" id="step2">
+                    <i class="fas fa-video"></i>
+                    <span>Extracting Frames</span>
+                </div>
+                <div class="processing-step" id="step3">
+                    <i class="fas fa-user"></i>
+                    <span>Detecting Player Movements</span>
+                </div>
+                <div class="processing-step" id="step4">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analyzing Techniques</span>
+                </div>
+                <div class="processing-step" id="step5">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Generating Insights</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Comparison View -->
+    <div id="comparisonView" class="comparison-view">
+        <!-- Header -->
+        <header class="comparison-header">
+            <div class="header-left">
+                <button class="btn-back" onclick="window.location.href='index.html'">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Home
+                </button>
+            </div>
+            <div class="header-center">
+                <h1 class="header-title">Video Comparison Analysis</h1>
+            </div>
+            <div class="header-right">
+            </div>
+        </header>
+
+        <!-- Video Comparison Container -->
+        <div class="video-comparison-container">
+            <!-- Original Video Section -->
+            <div class="video-section professional-section">
+                <div class="video-header">
+                    <div class="video-badge professional-badge">
+                        <i class="fas fa-video"></i>
+                        Original
+                    </div>
+                    <h2 class="video-title" id="professionalPlayerName">Original Match Video</h2>
+                </div>
+                <div class="video-wrapper">
+                    <video id="professionalVideo" class="comparison-video" controls>
+                        <source src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="video-controls-overlay">
+                        <button class="sync-btn" id="syncVideos">
+                            <i class="fas fa-sync"></i>
+                            Sync Videos
+                        </button>
+                    </div>
+                </div>
+                <div class="video-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Duration: <strong id="proDuration">--</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="video-divider">
+                <div class="divider-line"></div>
+                <div class="divider-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+            </div>
+
+            <!-- Analyzed Video Section -->
+            <div class="video-section your-section">
+                <div class="video-header">
+                    <div class="video-badge your-badge">
+                        <i class="fas fa-brain"></i>
+                        AI Analyzed
+                    </div>
+                    <h2 class="video-title" id="yourPlayerName">AI Analyzed Video</h2>
+                </div>
+                <div class="video-wrapper">
+                    <video id="yourVideo" class="comparison-video" controls>
+                        <source src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="video-controls-overlay">
+                        <button class="playback-speed-btn" id="playbackSpeed">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Speed: 1x
+                        </button>
+                    </div>
+                </div>
+                <div class="video-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Duration: <strong id="yourDuration">--</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis Panel -->
+        <div class="analysis-panel" style="display: none;">
+            <div class="analysis-tabs">
+                <button class="analysis-tab active" data-tab="insights">
+                    <i class="fas fa-lightbulb"></i>
+                    Key Insights
+                </button>
+                <button class="analysis-tab" data-tab="technique">
+                    <i class="fas fa-user-graduate"></i>
+                    Technique Comparison
+                </button>
+                <button class="analysis-tab" data-tab="improvements">
+                    <i class="fas fa-chart-line"></i>
+                    Areas for Improvement
+                </button>
+                <button class="analysis-tab" data-tab="timeline">
+                    <i class="fas fa-history"></i>
+                    Timeline Analysis
+                </button>
+            </div>
+
+            <div class="analysis-content">
+                <!-- Key Insights Tab -->
+                <div class="tab-content active" data-content="insights">
+                    <h3 class="content-title">Key Insights</h3>
+                    <div class="insights-grid">
+                        <div class="insight-card">
+                            <div class="insight-icon positive">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <h4>Strong Forehand</h4>
+                            <p>Your forehand technique shows good power generation, similar to professional form.</p>
+                        </div>
+                        <div class="insight-card">
+                            <div class="insight-icon warning">
+                                <i class="fas fa-exclamation"></i>
+                            </div>
+                            <h4>Footwork Timing</h4>
+                            <p>Professional player positions 0.3s earlier. Focus on anticipation drills.</p>
+                        </div>
+                        <div class="insight-card">
+                            <div class="insight-icon negative">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <h4>Backhand Follow-Through</h4>
+                            <p>Limited follow-through compared to pro. Extend arm motion for better spin.</p>
+                        </div>
+                        <div class="insight-card">
+                            <div class="insight-icon positive">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <h4>Serve Variation</h4>
+                            <p>Good serve placement variety, matching professional strategic approach.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technique Comparison Tab -->
+                <div class="tab-content" data-content="technique">
+                    <h3 class="content-title">Technique Comparison</h3>
+                    <div class="technique-comparison">
+                        <div class="technique-item">
+                            <div class="technique-header">
+                                <h4>Stance & Positioning</h4>
+                                <div class="similarity-score">85%</div>
+                            </div>
+                            <div class="comparison-bars">
+                                <div class="bar-item">
+                                    <span class="bar-label">Professional</span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill professional" style="width: 95%;"></div>
+                                    </div>
+                                    <span class="bar-value">95%</span>
+                                </div>
+                                <div class="bar-item">
+                                    <span class="bar-label">You</span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill yours" style="width: 85%;"></div>
+                                    </div>
+                                    <span class="bar-value">85%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="technique-item">
+                            <div class="technique-header">
+                                <h4>Stroke Mechanics</h4>
+                                <div class="similarity-score">72%</div>
+                            </div>
+                            <div class="comparison-bars">
+                                <div class="bar-item">
+                                    <span class="bar-label">Professional</span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill professional" style="width: 92%;"></div>
+                                    </div>
+                                    <span class="bar-value">92%</span>
+                                </div>
+                                <div class="bar-item">
+                                    <span class="bar-label">You</span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill yours" style="width: 72%;"></div>
+                                    </div>
+                                    <span class="bar-value">72%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="technique-item">
+                            <div class="technique-header">
+                                <h4>Movement Efficiency</h4>
+                                <div class="similarity-score">68%</div>
+                            </div>
+                            <div class="comparison-bars">
+                                <div class="bar-item">
+                                    <span class="bar-label">Professional</span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill professional" style="width: 90%;"></div>
+                                    </div>
+                                    <span class="bar-value">90%</span>
+                                </div>
+                                <div class="bar-item">
+                                    <span class="bar-label">You</span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill yours" style="width: 68%;"></div>
+                                    </div>
+                                    <span class="bar-value">68%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Improvements Tab -->
+                <div class="tab-content" data-content="improvements">
+                    <h3 class="content-title">Areas for Improvement</h3>
+                    <div class="improvements-list">
+                        <div class="improvement-item priority-high">
+                            <div class="improvement-header">
+                                <div class="priority-badge high">High Priority</div>
+                                <h4>Footwork Speed & Positioning</h4>
+                            </div>
+                            <p class="improvement-description">
+                                The professional player demonstrates superior court coverage with faster lateral movements 
+                                and better ready position between shots.
+                            </p>
+                            <div class="improvement-actions">
+                                <button class="btn-action"><i class="fas fa-play"></i> Watch Tutorial</button>
+                                <button class="btn-action"><i class="fas fa-dumbbell"></i> Practice Drills</button>
+                            </div>
+                        </div>
+
+                        <div class="improvement-item priority-medium">
+                            <div class="improvement-header">
+                                <div class="priority-badge medium">Medium Priority</div>
+                                <h4>Backhand Consistency</h4>
+                            </div>
+                            <p class="improvement-description">
+                                Your backhand shows inconsistent contact points. Focus on maintaining the same swing path 
+                                and contact height as demonstrated by the professional.
+                            </p>
+                            <div class="improvement-actions">
+                                <button class="btn-action"><i class="fas fa-play"></i> Watch Tutorial</button>
+                                <button class="btn-action"><i class="fas fa-dumbbell"></i> Practice Drills</button>
+                            </div>
+                        </div>
+
+                        <div class="improvement-item priority-low">
+                            <div class="improvement-header">
+                                <div class="priority-badge low">Low Priority</div>
+                                <h4>Serve Spin Variation</h4>
+                            </div>
+                            <p class="improvement-description">
+                                While your serve placement is good, adding more spin variation like the professional 
+                                can make your serves more unpredictable.
+                            </p>
+                            <div class="improvement-actions">
+                                <button class="btn-action"><i class="fas fa-play"></i> Watch Tutorial</button>
+                                <button class="btn-action"><i class="fas fa-dumbbell"></i> Practice Drills</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Analysis Tab -->
+                <div class="tab-content" data-content="timeline">
+                    <h3 class="content-title">Timeline Analysis</h3>
+                    <div class="timeline-container">
+                        <div class="timeline-controls">
+                            <button class="timeline-btn" id="playTimeline">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <input type="range" class="timeline-slider" id="timelineSlider" min="0" max="100" value="0">
+                            <span class="timeline-time" id="timelineTime">00:00 / 00:00</span>
+                        </div>
+                        <div class="timeline-events">
+                            <div class="timeline-event" style="left: 10%;">
+                                <div class="event-marker serve"></div>
+                                <div class="event-tooltip">Serve - 0:05</div>
+                            </div>
+                            <div class="timeline-event" style="left: 25%;">
+                                <div class="event-marker rally"></div>
+                                <div class="event-tooltip">Rally - 0:12</div>
+                            </div>
+                            <div class="timeline-event" style="left: 45%;">
+                                <div class="event-marker point"></div>
+                                <div class="event-tooltip">Point Won - 0:22</div>
+                            </div>
+                            <div class="timeline-event" style="left: 70%;">
+                                <div class="event-marker serve"></div>
+                                <div class="event-tooltip">Serve - 0:35</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="video-comparison.js"></script>
+</body>
+</html>

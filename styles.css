@@ -2023,6 +2023,180 @@ html {
 }
 
 /* ==================== */
+/* Upload Video Modal */
+/* ==================== */
+.upload-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.upload-modal.active {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+.upload-modal-content {
+    background: white;
+    border-radius: 24px;
+    padding: 2.5rem;
+    max-width: 700px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+}
+
+.upload-modal-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #94A3B8;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.upload-modal-close:hover {
+    background: #F1F5F9;
+    color: var(--dark-bg);
+    transform: rotate(90deg);
+}
+
+.upload-modal-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark-bg);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.upload-options {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+.upload-option-card {
+    flex: 1;
+    background: #F8FAFC;
+    border: 2px solid #E2E8F0;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-option-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-purple);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.upload-option-card:hover {
+    border-color: var(--primary-purple);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(124, 58, 237, 0.2);
+}
+
+.upload-option-card:hover::before {
+    opacity: 0.05;
+}
+
+.upload-option-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--gradient-purple);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    color: white;
+    transition: transform 0.3s ease;
+}
+
+.upload-option-card:hover .upload-option-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.upload-option-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--dark-bg);
+    margin-bottom: 0.75rem;
+}
+
+.upload-option-card p {
+    color: #64748B;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.upload-option-card.uploaded {
+    border-color: #22C55E;
+    background: rgba(34, 197, 94, 0.05);
+}
+
+.upload-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 100px;
+    overflow: hidden;
+    margin-top: 1rem;
+}
+
+.upload-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #22C55E 0%, #16A34A 100%);
+    border-radius: 100px;
+    transition: width 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .upload-options {
+        flex-direction: column;
+    }
+    
+    .upload-modal-content {
+        padding: 2rem 1.5rem;
+    }
+    
+    .upload-modal-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* ==================== */
 /* Chatbot Styles */
 /* ==================== */
 .chatbot {
