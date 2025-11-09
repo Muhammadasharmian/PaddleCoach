@@ -114,9 +114,40 @@ window.addEventListener('scroll', () => {
         const newOpacity = Math.max(0.3, 1 - scrolled / 700);
         hero.style.opacity = newOpacity;
     } else if (hero && isUserLoggedIn()) {
-        // When logged in, keep hero section stable (no parallax)
+        // When logged in, apply fade in/out effect based on visibility
+        const heroRect = hero.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        
+        // Calculate how much of the hero is visible
+        const heroTop = heroRect.top;
+        const heroBottom = heroRect.bottom;
+        const heroHeight = heroRect.height;
+        
+        let opacity = 0;
+        
+        // Fade in as hero comes into view from bottom
+        if (heroTop < windowHeight && heroTop > windowHeight - heroHeight) {
+            // Element is entering from bottom
+            const visibleAmount = windowHeight - heroTop;
+            opacity = Math.min(1, visibleAmount / (heroHeight * 0.5));
+        }
+        // Full opacity when hero is in the middle of viewport
+        else if (heroTop <= windowHeight - heroHeight && heroBottom >= heroHeight) {
+            opacity = 1;
+        }
+        // Fade out as hero exits from top
+        else if (heroBottom > 0 && heroBottom < heroHeight) {
+            // Element is exiting from top
+            opacity = Math.max(0, heroBottom / (heroHeight * 0.5));
+        }
+        // Fully visible when completely in viewport
+        else if (heroTop >= 0 && heroBottom <= windowHeight) {
+            opacity = 1;
+        }
+        
         hero.style.transform = 'translateY(0)';
-        hero.style.opacity = '1';
+        hero.style.opacity = opacity;
+        hero.style.transition = 'opacity 0.3s ease';
     }
 });
 
