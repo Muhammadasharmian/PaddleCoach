@@ -19,52 +19,52 @@ ball_tracking_process = None
 @app.route('/')
 def index():
     """Serve the main index.html file."""
-    return send_file('index.html')
+    return send_file('frontend/index.html')
 
 @app.route('/index.html')
 def index_html():
     """Redirect index.html to root."""
-    return send_file('index.html')
+    return send_file('frontend/index.html')
 
 @app.route('/ball_tracking.html')
 def ball_tracking():
     """Serve the ball tracking page."""
-    return send_file('ball_tracking.html')
+    return send_file('frontend/ball_tracking.html')
 
 @app.route('/ball-tracking.html')
 def ball_tracking_hyphen():
     """Redirect ball-tracking.html to ball_tracking.html."""
-    return send_file('ball_tracking.html')
+    return send_file('frontend/ball_tracking.html')
 
 @app.route('/ball-tracking-record.html')
 def ball_tracking_record():
     """Serve the record page."""
-    return send_file('ball-tracking-record.html')
+    return send_file('frontend/ball-tracking-record.html')
 
 @app.route('/ball-tracking-upload.html')
 def ball_tracking_upload():
     """Serve the upload page."""
-    return send_file('ball-tracking-upload.html')
+    return send_file('frontend/ball-tracking-upload.html')
 
 @app.route('/body-tracking-upload.html')
 def body_tracking_upload():
     """Serve the body tracking upload page."""
-    return send_file('body-tracking-upload.html')
+    return send_file('frontend/body-tracking-upload.html')
 
 @app.route('/analysis-final.html')
 def analysis_final():
     """Serve the final analysis page."""
-    return send_file('analysis-final.html')
+    return send_file('frontend/analysis-final.html')
 
 @app.route('/styles.css')
 def styles():
     """Serve the CSS file."""
-    return send_file('styles.css')
+    return send_file('frontend/styles.css')
 
 @app.route('/script.js')
 def script():
     """Serve the JavaScript file."""
-    return send_file('script.js')
+    return send_file('frontend/script.js')
 
 @app.route('/landing_image.png')
 def landing_image():
@@ -86,7 +86,7 @@ def start_ball_tracking():
         
         # Start the process_ball_tracking.py script
         ball_tracking_process = subprocess.Popen(
-            ['python', 'process_ball_tracking.py'],
+            ['python', 'backend/process_ball_tracking.py'],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
@@ -158,7 +158,7 @@ def upload_video():
         # Run demo_video.py in background
         def process_video():
             try:
-                subprocess.run(['python', 'demo_video.py'], check=True)
+                subprocess.run(['python', 'backend/demo_video.py'], check=True)
             except Exception as e:
                 print(f"Error processing video: {e}")
         

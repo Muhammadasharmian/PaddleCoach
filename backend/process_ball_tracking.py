@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 # Add src to path
-sys.path.append(str(Path(__file__).parent / "src"))
+sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 from vision.ball_tracker import BallTracker
 from models.ball_data import BallData

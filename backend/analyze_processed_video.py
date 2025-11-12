@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 
 # Add src to path
-sys.path.append(str(Path(__file__).parent / "src"))
+sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 from vision.game_analyzer import GameAnalyzer
 
